@@ -1,0 +1,6 @@
+{
+  "name": "Faseeh - Learn Arabic A1 to C2",
+  "description": "An interactive, gamified web application for foreigners to master Arabic from A1 to C2 with AI voice dialogues, games, calligraphy tracing, and CEFR curriculum.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -13,48 +13,61 @@ interface PlacementTestProps {
 
 interface TestQuestion {
   level: CEFRLevel;
-  questionText: string;
+  questionEn: string;
+  questionFr: string;
+  questionAr?: string;
   arabicPrompt?: string;
   options: string[];
   correctIdx: number;
-  explanation: string;
+  explanationEn: string;
+  explanationFr: string;
 }
 
 const PLACEMENT_QUESTIONS: TestQuestion[] = [
   {
     level: 'A1',
-    questionText: 'What is the standard polite reply to "السَّلَامُ عَلَيْكُم" (As-salāmu ‘alaykum)?',
+    questionEn: 'What is the standard polite reply to "السَّلَامُ عَلَيْكُم" (As-salāmu ‘alaykum)?',
+    questionFr: 'Quelle est la réponse polie standard à "السَّلَامُ عَلَيْكُم" (As-salāmu ‘alaykum) ?',
     options: ['وَعَلَيْكُمُ السَّلَام', 'صَبَاحُ الخَيْر', 'أَنَا أُسْتَاذ', 'مَعَ السَّلَامَة'],
     correctIdx: 0,
-    explanation: 'The correct reply is "وَعَلَيْكُمُ السَّلَام" (Wa ‘alaykumu as-salām).',
+    explanationEn: 'The correct reply is "وَعَلَيْكُمُ السَّلَام" (Wa ‘alaykumu as-salām).',
+    explanationFr: 'La réponse correcte est "وَعَلَيْكُمُ السَّلَام" (Et que la paix soit sur vous).',
   },
   {
     level: 'A2',
-    questionText: 'How do you ask "Where is the train station?" in Arabic?',
+    questionEn: 'How do you ask "Where is the train station?" in Arabic?',
+    questionFr: 'Comment demande-t-on "Où est la gare ferroviaire ?" en arabe ?',
     options: ['أَيْنَ مَحَطَّةُ القِطَار؟', 'كَمْ سِعْرُ التَّذْكِرَة؟', 'مَاذَا تُرِيدُ أَنْ تَأْكُل؟', 'كَيْفَ الجَوُّ اليَوْم؟'],
     correctIdx: 0,
-    explanation: '"أَيْنَ مَحَطَّةُ القِطَار؟" (Ayna maḥaṭṭatu al-qiṭār?) means "Where is the train station?".',
+    explanationEn: '"أَيْنَ مَحَطَّةُ القِطَار؟" (Ayna maḥaṭṭatu al-qiṭār?) means "Where is the train station?".',
+    explanationFr: '"أَيْنَ مَحَطَّةُ القِطَار؟" (Ayna maḥaṭṭatu al-qiṭār?) signifie "Où est la gare ?".',
   },
   {
     level: 'B1',
-    questionText: 'Choose the correct past tense verb: "سَامِي وَعُمَر ______ إِلَى مَرَّاكُش الأُسْبُوعَ المَاضِي."',
-    options: ['سَافَرَا (Dual past)', 'يُسَافِرُونَ (Present)', 'سَافَرَتْ (Feminine)', 'سَافِرْ (Imperative)'],
+    questionEn: 'Choose the correct past tense verb: "سَامِي وَعُمَر ______ إِلَى مَرَّاكُش الأُسْبُوعَ المَاضِي."',
+    questionFr: 'Choisissez le verbe au passé approprié pour deux personnes (duel masculin) : "سَامِي وَعُمَر ______ إِلَى مَرَّاكُش."',
+    options: ['سَافَرَا (Duel passé)', 'يُسَافِرُونَ (Présent pluriel)', 'سَافَرَتْ (Féminin singulier)', 'سَافِرْ (Impératif)'],
     correctIdx: 0,
-    explanation: 'For two male subjects (Sami and Omar), the dual past verb is "سَافَرَا".',
+    explanationEn: 'For two male subjects (Sami and Omar), the dual past verb is "سَافَرَا".',
+    explanationFr: 'Pour deux sujets masculins (Sami et Omar), la terminaison du duel au passé est "سَافَرَا".',
   },
   {
     level: 'B2',
-    questionText: 'Which Arabic proverb expresses that "Patience brings ultimate relief and victory"?',
+    questionEn: 'Which Arabic proverb expresses that "Patience brings ultimate relief and victory"?',
+    questionFr: 'Quel proverbe arabe exprime que "La patience est la clé de la délivrance et du succès" ?',
     options: ['الصَّبْرُ مِفْتَاحُ الفَرَج', 'الوقت كالسيف إن لم تقطعه قطعك', 'لكل مقال مقام', 'العقل السليم في الجسم السليم'],
     correctIdx: 0,
-    explanation: '"الصَّبْرُ مِفْتَاحُ الفَرَج" means patience is the key to relief.',
+    explanationEn: '"الصَّبْرُ مِفْتَاحُ الفَرَج" means patience is the key to relief.',
+    explanationFr: '"الصَّبْرُ مِفْتَاحُ الفَرَج" signifie que la patience est la clé de toute délivrance.',
   },
   {
     level: 'C1',
-    questionText: 'What rhetorical device (بَلَاغَة) is used when a word is meant in an implicit metaphorical sense without stating the comparison particle (كَـ)?',
-    options: ['الاسْتِعَارَة (Metaphor)', 'الجِنَاس (Alliteration/Pun)', 'السَّجْع (Rhymed Prose)', 'الإِطْنَاب (Verbosity)'],
+    questionEn: 'What rhetorical device (بَلَاغَة) is used when a word is meant in an implicit metaphorical sense without stating the comparison particle (كَـ)?',
+    questionFr: 'Quelle figure de style rhétorique (Balagha) correspond à la métaphore implicite en arabe classique ?',
+    options: ['الاسْتِعَارَة (Métaphore)', 'الجِنَاس (Allitération/Calembour)', 'السَّجْع (Prose rimée)', 'الإِطْنَاب (Périphrase/Amplification)'],
     correctIdx: 0,
-    explanation: 'الاستعارة (Isti‘ārah) is the classical Arabic metaphor.',
+    explanationEn: 'الاستعارة (Isti‘ārah) is the classical Arabic metaphor.',
+    explanationFr: 'الاستعارة (Isti‘ārah) désigne la métaphore en rhétorique arabe.',
   },
 ];
 
@@ -138,9 +151,9 @@ export const PlacementTestModal: React.FC<PlacementTestProps> = ({
           <div className="mt-4 space-y-4">
             {/* Progress Bar */}
             <div className="flex items-center justify-between text-xs font-bold text-slate-600">
-              <span>Question {currentQIdx + 1} / {PLACEMENT_QUESTIONS.length}</span>
+              <span>{language === 'fr' ? `Question ${currentQIdx + 1} sur ${PLACEMENT_QUESTIONS.length}` : language === 'ar' ? `السؤال ${currentQIdx + 1} من ${PLACEMENT_QUESTIONS.length}` : `Question ${currentQIdx + 1} / ${PLACEMENT_QUESTIONS.length}`}</span>
               <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-950 font-extrabold border border-amber-200">
-                Target: {currentQ.level}
+                {language === 'fr' ? `Niveau : ${currentQ.level}` : `Target: ${currentQ.level}`}
               </span>
             </div>
             <div className="w-full bg-amber-100/80 h-2.5 rounded-full overflow-hidden border border-amber-200/60">
@@ -152,7 +165,9 @@ export const PlacementTestModal: React.FC<PlacementTestProps> = ({
 
             {/* Question Text */}
             <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80">
-              <p className="font-extrabold text-slate-900 text-sm">{currentQ.questionText}</p>
+              <p className="font-extrabold text-slate-900 text-sm">
+                {language === 'fr' ? currentQ.questionFr : language === 'ar' ? (currentQ.questionAr || currentQ.questionFr) : currentQ.questionEn}
+              </p>
             </div>
 
             {/* Options */}
@@ -186,7 +201,11 @@ export const PlacementTestModal: React.FC<PlacementTestProps> = ({
                     : 'bg-amber-100 text-slate-400 cursor-not-allowed'
                 }`}
               >
-                <span>{currentQIdx < PLACEMENT_QUESTIONS.length - 1 ? 'Next Question' : 'View Placement Result'}</span>
+                <span>
+                  {currentQIdx < PLACEMENT_QUESTIONS.length - 1
+                    ? (language === 'fr' ? 'Question Suivante' : language === 'ar' ? 'السؤال التالي' : 'Next Question')
+                    : (language === 'fr' ? 'Voir le Résultat' : language === 'ar' ? 'عرض النتيجة' : 'View Placement Result')}
+                </span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

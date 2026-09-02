@@ -1,6 +1,6 @@
 import React from 'react';
 import { CEFRLevel, SupportedLanguage } from '../types';
-import { Sparkles, Flame, Zap, Gem, Award, Search, HelpCircle, Volume2, Globe, Video, BookOpen, GraduationCap } from 'lucide-react';
+import { Sparkles, Flame, Zap, Gem, Award, Search, HelpCircle, Volume2, Globe, Video, BookOpen, GraduationCap, Mic } from 'lucide-react';
 
 interface NavbarProps {
   currentLevel: CEFRLevel;
@@ -16,6 +16,7 @@ interface NavbarProps {
   onOpenPhonetics: () => void;
   onOpenVideoLibrary: () => void;
   onOpenReadingLab: () => void;
+  onOpenSpeakingLab?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -32,6 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenPhonetics,
   onOpenVideoLibrary,
   onOpenReadingLab,
+  onOpenSpeakingLab,
 }) => {
   const levels: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -100,6 +102,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             
             {/* Quick Tools */}
             <div className="flex items-center gap-1">
+              {onOpenSpeakingLab && (
+                <button
+                  id="btn-speaking-lab"
+                  onClick={onOpenSpeakingLab}
+                  className="p-2 text-rose-700 hover:text-rose-950 hover:bg-rose-100/80 rounded-lg transition-colors text-xs font-bold flex items-center gap-1.5 bg-rose-50 border border-rose-300 shadow-2xs"
+                  title="مختبر التعبير الشفهي المسترسل والاستماع"
+                >
+                  <Mic className="w-4 h-4 text-rose-600 animate-pulse" />
+                  <span className="hidden sm:inline font-extrabold">{language === 'fr' ? 'Oral & Écoute' : language === 'ar' ? 'التعبير الشفهي' : 'Speaking Lab'}</span>
+                </button>
+              )}
+
               <button
                 id="btn-reading-lab"
                 onClick={onOpenReadingLab}
@@ -172,25 +186,25 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Language Switcher Dropdown */}
             <div className="relative flex items-center bg-amber-100/80 rounded-lg p-0.5 border border-amber-300/80 text-xs font-bold">
               <button
-                id="btn-lang-en"
-                onClick={() => onSelectLanguage('en')}
-                className={`px-2 py-1 rounded-md transition-all ${language === 'en' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
-              >
-                EN 🇬🇧
-              </button>
-              <button
                 id="btn-lang-fr"
                 onClick={() => onSelectLanguage('fr')}
-                className={`px-2 py-1 rounded-md transition-all ${language === 'fr' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
+                className={`px-2 py-1 rounded-md transition-all ${language === 'fr' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 FR 🇫🇷
               </button>
               <button
                 id="btn-lang-ar"
                 onClick={() => onSelectLanguage('ar')}
-                className={`px-2 py-1 rounded-md transition-all ${language === 'ar' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
+                className={`px-2 py-1 rounded-md transition-all ${language === 'ar' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 عربي 🇸🇦
+              </button>
+              <button
+                id="btn-lang-en"
+                onClick={() => onSelectLanguage('en')}
+                className={`px-2 py-1 rounded-md transition-all ${language === 'en' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                EN 🇬🇧
               </button>
             </div>
 

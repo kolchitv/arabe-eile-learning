@@ -1,6 +1,6 @@
 {
-  "name": "Faseeh - Learn Arabic A1 to C2",
-  "description": "An interactive, gamified web application for foreigners to master Arabic from A1 to C2 with AI voice dialogues, games, calligraphy tracing, and CEFR curriculum.",
+  "name": "Faseeh - Apprendre l'Arabe (A1 à C2)",
+  "description": "Application interactive et pédagogique d'apprentissage de la langue arabe du niveau A1 au C2 pour le public francophone, avec dialogues oraux, fiches de lecture, calligraphie et tuteur intelligent.",
   "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

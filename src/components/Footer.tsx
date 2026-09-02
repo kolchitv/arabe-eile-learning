@@ -17,6 +17,7 @@ interface FooterProps {
   onOpenVideoLibrary?: () => void;
   onOpenPlacement?: () => void;
   onOpenReadingLab?: () => void;
+  onOpenSpeakingLab?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -25,6 +26,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenVideoLibrary,
   onOpenPlacement,
   onOpenReadingLab,
+  onOpenSpeakingLab,
 }) => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -112,6 +114,15 @@ export const Footer: React.FC<FooterProps> = ({
                   className="text-slate-600 hover:text-sky-700 transition-colors"
                 >
                   {language === 'ar' ? 'تعلم العربية بسهولة' : "Apprendre l'arabe facilement"}
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={onOpenSpeakingLab}
+                  className="text-slate-600 hover:text-rose-700 font-semibold transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                  <span>{language === 'ar' ? 'التعبير الشفهي والاستماع (Parler en continu)' : 'Oral & Écoute (Parler en continu)'}</span>
                 </button>
               </li>
               <li>

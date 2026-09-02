@@ -12,6 +12,7 @@ import { CertificateModal } from './components/CertificateModal';
 import { PhoneticsGuideModal } from './components/PhoneticsGuideModal';
 import { VideoLibraryModal } from './components/VideoLibraryModal';
 import { ReadingLabModal } from './components/ReadingLabModal';
+import { ContinuousSpeakingLab } from './components/ContinuousSpeakingLab';
 import { Footer } from './components/Footer';
 import { CulturalProverbs } from './components/CulturalProverbs';
 import { playSoundEffect } from './utils/audio';
@@ -32,8 +33,11 @@ import {
 
 export default function App() {
   const [currentLevel, setCurrentLevel] = useState<CEFRLevel>('A1');
-  const [language, setLanguage] = useState<SupportedLanguage>('en');
-  const [activeView, setActiveView] = useState<'roadmap' | 'lesson' | 'tutor' | 'soundLab'>('roadmap');
+  const [language, setLanguage] = useState<SupportedLanguage>(() => {
+    const saved = localStorage.getItem('arabiya_lang');
+    return (saved as SupportedLanguage) || 'fr';
+  });
+  const [activeView, setActiveView] = useState<'roadmap' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab'>('roadmap');
   const [selectedUnit, setSelectedUnit] = useState<LessonUnit | null>(null);
 
   // Gamification State (with local storage persistence)
@@ -82,13 +86,14 @@ export default function App() {
     playSoundEffect('tap');
   };
 
-  // Persist gamification changes
+  // Persist gamification and language changes
   useEffect(() => {
+    localStorage.setItem('arabiya_lang', language);
     localStorage.setItem('arabiya_xp', xp.toString());
     localStorage.setItem('arabiya_streak', streak.toString());
     localStorage.setItem('arabiya_gems', gems.toString());
     localStorage.setItem('arabiya_completed_units', JSON.stringify(completedUnits));
-  }, [xp, streak, gems, completedUnits]);
+  }, [language, xp, streak, gems, completedUnits]);
 
   const handleSelectUnit = (unit: LessonUnit) => {
     setSelectedUnit(unit);
@@ -126,6 +131,10 @@ export default function App() {
         onOpenPhonetics={() => setIsPhoneticsModalOpen(true)}
         onOpenVideoLibrary={() => handleOpenVideoLibrary('all')}
         onOpenReadingLab={() => handleOpenReadingLab()}
+        onOpenSpeakingLab={() => {
+          setActiveView('speakingLab');
+          playSoundEffect('tap');
+        }}
       />
 
       {/* Main Container */}
@@ -148,6 +157,23 @@ export default function App() {
             >
               <Compass className="w-4 h-4" />
               <span>{language === 'ar' ? 'خريطة المستويات' : language === 'fr' ? 'Parcours A1-C2' : 'Curriculum Roadmap'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveView('speakingLab');
+                setSelectedUnit(null);
+                playSoundEffect('tap');
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeView === 'speakingLab'
+                  ? 'bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white shadow-sm shadow-rose-600/30'
+                  : 'text-slate-700 hover:bg-rose-50 hover:text-rose-900 border border-rose-200/60'
+              }`}
+            >
+              <span className="text-base">🎙️</span>
+              <span>{language === 'ar' ? 'التعبير الشفهي والاستماع (Parler en continu)' : language === 'fr' ? 'Oral & Écoute (Parler en continu)' : 'Speaking & Listening'}</span>
+              <span className="bg-rose-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-black animate-pulse">ELCO</span>
             </button>
 
             <button
@@ -272,6 +298,14 @@ export default function App() {
           </div>
         )}
 
+        {activeView === 'speakingLab' && (
+          <ContinuousSpeakingLab
+            currentLevel={currentLevel}
+            language={language}
+            onEarnXp={(amt) => setXp((x) => x + amt)}
+          />
+        )}
+
         {activeView === 'soundLab' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -344,6 +378,11 @@ export default function App() {
         onOpenVideoLibrary={() => handleOpenVideoLibrary('all')}
         onOpenPlacement={() => setIsPlacementModalOpen(true)}
         onOpenReadingLab={() => handleOpenReadingLab()}
+        onOpenSpeakingLab={() => {
+          setActiveView('speakingLab');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          playSoundEffect('tap');
+        }}
       />
     </div>
   );

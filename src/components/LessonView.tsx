@@ -4,6 +4,7 @@ import { speakArabic, playSoundEffect } from '../utils/audio';
 import { LetterTraceCanvas } from './LetterTraceCanvas';
 import { SentenceBuilderGame } from './SentenceBuilderGame';
 import { FlashcardsGame } from './FlashcardsGame';
+import { ContinuousSpeakingLab } from './ContinuousSpeakingLab';
 import {
   BookOpen,
   Volume2,
@@ -18,6 +19,7 @@ import {
   Flame,
   Award,
   Video,
+  Mic,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -36,7 +38,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
   language,
   onOpenVideoLibrary,
 }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'tracing' | 'dialogue' | 'reading' | 'exercises' | 'flashcards'>(
+  const [activeTab, setActiveTab] = useState<'overview' | 'tracing' | 'dialogue' | 'reading' | 'speaking' | 'exercises' | 'flashcards'>(
     unit.tracingLetters && unit.tracingLetters.length > 0 ? 'tracing' : 'dialogue'
   );
 
@@ -185,6 +187,21 @@ export const LessonView: React.FC<LessonViewProps> = ({
             <span>{language === 'ar' ? 'النص وفهم المكتوب' : language === 'fr' ? 'Compréhension Écrite' : 'Reading & Passage'}</span>
           </button>
         )}
+
+        <button
+          onClick={() => {
+            setActiveTab('speaking');
+            playSoundEffect('tap');
+          }}
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'speaking'
+              ? 'bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white shadow-sm shadow-rose-600/30'
+              : 'text-slate-700 hover:bg-rose-50 hover:text-rose-900 border border-rose-200/50'
+          }`}
+        >
+          <Mic className="w-4 h-4 text-rose-500" />
+          <span>{language === 'ar' ? 'التعبير الشفهي والاستماع' : language === 'fr' ? 'Oral & Parler en continu' : 'Speaking & Oral'}</span>
+        </button>
 
         <button
           onClick={() => {
@@ -343,6 +360,14 @@ export const LessonView: React.FC<LessonViewProps> = ({
               <p>{language === 'fr' ? unit.readingPassage.translationFr : unit.readingPassage.translationEn}</p>
             </div>
           </div>
+        )}
+
+        {/* TAB: Continuous Speaking & Listening */}
+        {activeTab === 'speaking' && (
+          <ContinuousSpeakingLab
+            currentLevel={unit.level}
+            language={language}
+          />
         )}
 
         {/* TAB 4: Flashcards */}

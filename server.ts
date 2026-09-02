@@ -33,19 +33,19 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // 1. AI Interactive Arabic Tutor & Roleplay Endpoint
 app.post('/api/tutor-chat', async (req: Request, res: Response) => {
-  const { message, level = 'A1', topic = 'general', userLanguage = 'en', history = [] } = req.body;
+  const { message, level = 'A1', topic = 'general', userLanguage = 'fr', history = [] } = req.body;
 
   const ai = getAI();
   if (!ai) {
     // Elegant pedagogical fallback when API key is configuring
     const fallbacks: Record<string, string> = {
-      A1: `مَرْحَبًا بِكَ! (Marhaban bika! - Welcome!)
+      A1: `مَرْحَبًا بِكَ! (Marhaban bika! - Bienvenue !)
 أَنَا أُسْتَاذُكَ فَصِيح. أَنَا هُنَا لِمُسَاعَدَتِكَ فِي تَعَلُّمِ العَرَبِيَّةِ خُطْوَةً بِخُطْوَة.
-👉 Translation: Welcome! I am your tutor Faseeh. I am here to help you learn Arabic step by step!
-💡 Try saying: "كَيْفَ حَالُكَ؟" (Kayfa haluka? - How are you?)`,
+👉 Traduction : Bienvenue ! Je suis votre tuteur Faseeh. Je suis là pour vous aider à apprendre l'arabe pas à pas !
+💡 Essayez de dire : "كَيْفَ حَالُكَ؟" (Kayfa haluka? - Comment allez-vous ?)`,
       A2: `أَهْلًا وَسَهْلًا! أَنَا سَعِيدٌ بِلِقَائِكَ.
 هَلْ تُرِيدُ أَنْ نَتَدَرَّبَ عَلَى طَلَبِ الطَّعَامِ فِي المَطْعَمِ أَمِ التَّسَوُّقِ فِي السُّوقِ؟
-👉 Translation: Welcome! I am happy to meet you. Would you like to practice ordering in a restaurant or shopping in the traditional market?`,
+👉 Traduction : Bienvenue ! Ravi de vous rencontrer. Voulez-vous vous entraîner à commander au restaurant ou à faire des achats au souk traditionnel ?`,
       B1: `مَسَاءُ الخَيْرِ يَا صَدِيقِي. فِي مُسْتَوَى B1، سَنَتَحَدَّثُ عَنْ خُطَطِ العُطْلَةِ، وَتَجَارِبِ السَّفَرِ، وَالعَادَاتِ التَّقْلِيدِيَّةِ. مَا هُوَ مَوْضُوعُكَ المُفَضَّلُ اليَوْم؟`,
       B2: `أَهْلًا بِكَ. فِي هَذَا المُسْتَوَى المُمَيَّزِ نُنَاقِشُ مَقَالَاتٍ ثَقَافِيَّةً وَنَقَارِنُ بَيْنَ اللَّهَجَاتِ العَرَبِيَّةِ وَالفُصْحَى. هَلْ جَرَّبْتَ سَمَاعَ أَيِّ لَهْجَةٍ عَرَبِيَّةٍ مِنْ قَبْل؟`,
       C1: `أَهْلًا بِرَائِدِ الفَصَاحَةِ! فِي المُسْتَوَى الأَكَادِيمِيِّ C1 نُحَلِّلُ النُّصُوصَ الأَدَبِيَّةَ وَنَسْتَعْرِضُ أَسَالِيبَ البَلَاغَةِ وَالخِطَابَة. مَا هُوَ النَّصُّ الَّذِي تَرْغَبُ فِي سَبْرِ أَغْوَارِهِ؟`,
@@ -54,33 +54,33 @@ app.post('/api/tutor-chat', async (req: Request, res: Response) => {
 
     return res.json({
       reply: fallbacks[level] || fallbacks.A1,
-      pronunciationTips: 'Try practicing with short vowels (Fatha, Kasra, Damma) to build accurate pronunciation.',
+      pronunciationTips: 'Pratiquez avec les voyelles courtes (Fatha, Kasra, Damma) pour une prononciation fluide et juste.',
       vocabularyUsed: [
-        { arabic: 'مَرْحَبًا', transliteration: 'Marhaban', meaning: 'Hello / Welcome' },
-        { arabic: 'أَهْلًا وَسَهْلًا', transliteration: 'Ahlan wa Sahlan', meaning: 'Welcome' },
-        { arabic: 'كَيْفَ حَالُك؟', transliteration: 'Kayfa haluk?', meaning: 'How are you?' }
+        { arabic: 'مَرْحَبًا', transliteration: 'Marhaban', meaning: 'Bonjour / Bienvenue' },
+        { arabic: 'أَهْلًا وَسَهْلًا', transliteration: 'Ahlan wa Sahlan', meaning: 'Bienvenue' },
+        { arabic: 'كَيْفَ حَالُك؟', transliteration: 'Kayfa haluk?', meaning: 'Comment vas-tu / allez-vous ?' }
       ]
     });
   }
 
   try {
-    const systemPrompt = `You are "فصيح (Faseeh)", an exceptionally friendly, encouraging, and pedagogical Arabic teacher specialized in teaching Arabic to foreign non-native speakers according to the CEFR standard (A1 to C2).
+    const systemPrompt = `You are "فصيح (Faseeh)", a warm, encouraging and pedagogical Arabic tutor designed specifically for French-speaking learners (apprenants francophones) learning Modern Standard Arabic (Fusha) from CEFR level A1 to C2.
 Current Target Learner Level: ${level} (CEFR).
 Current Context / Topic: ${topic}.
-Learner's native explanation language: ${userLanguage} (e.g. English, French, etc.).
+Learner's native explanation language: ${userLanguage === 'en' ? 'English' : userLanguage === 'ar' ? 'Arabic' : 'French (Français)'}.
 
 Pedagogical Guidelines:
-1. Always write Arabic text with FULL Tashkeel (diacritics: Fatha, Damma, Kasra, Sukun, Shaddah) so foreign students can read and pronounce properly.
-2. For levels A1 and A2, always provide Latin transliteration (Romanization e.g., "Kayfa haluka?") and the translation in ${userLanguage}.
-3. For B1-B2, mix Arabic immersion with concise explanations of idioms and grammar in ${userLanguage}.
-4. For C1-C2, use rich, authentic, expressive classical Arabic (Fusha) with rhetorical insights (Balagha/I'rab).
-5. If the user made a grammar or spelling mistake in their message, gently praise their effort first, then explain the correction clearly.
+1. Always write Arabic text with FULL Tashkeel (diacritics: Fatha, Damma, Kasra, Sukun, Shaddah).
+2. For levels A1 and A2, always provide French-friendly transliteration and clear translations in French (unless user specifically chooses another language).
+3. For B1-B2, combine Arabic immersion with concise grammatical and cultural explanations in French.
+4. For C1-C2, use rich classical Arabic with stylistic nuances, rhetoric (Balagha), and syntactic analysis (I'rab).
+5. If the user makes a mistake, encourage them and provide a gentle correction in French.
 6. Provide your final response in valid JSON matching this schema:
 {
-  "reply": "Your main conversational reply with full vocalization/tashkeel, transliteration (if A1-B1) and translation",
-  "feedback": "Friendly correction or encouragement regarding learner's Arabic, if applicable",
+  "reply": "Your main conversational reply with full vocalization/tashkeel, transliteration (if A1-B1) and translation in French",
+  "feedback": "Friendly correction or encouragement in French regarding learner's Arabic, if applicable",
   "vocabulary": [
-    {"arabic": "الكلمة", "transliteration": "alkalima", "meaning": "English/French meaning"}
+    {"arabic": "الكلمة", "transliteration": "alkalima", "meaning": "Définition en français"}
   ],
   "suggestedReplies": ["Next phrase 1 in Arabic with tashkeel", "Next phrase 2 in Arabic with tashkeel"]
 }`;
@@ -106,7 +106,7 @@ Pedagogical Guidelines:
 
 // 2. AI Sentence Analyzer & Grammar / Tashkeel Helper
 app.post('/api/analyze-arabic', async (req: Request, res: Response) => {
-  const { sentence, targetLevel = 'A1' } = req.body;
+  const { sentence, targetLevel = 'A1', userLanguage = 'fr' } = req.body;
 
   if (!sentence || typeof sentence !== 'string') {
     return res.status(400).json({ error: 'Sentence is required' });
@@ -117,37 +117,37 @@ app.post('/api/analyze-arabic', async (req: Request, res: Response) => {
     return res.json({
       original: sentence,
       tashkeel: sentence,
-      transliteration: 'Sentence transliteration',
-      translation: 'English translation of the input phrase',
+      transliteration: 'Transcription phonétique',
+      translation: 'Traduction française de la phrase',
       grammarBreakdown: [
-        { word: sentence.split(' ')[0] || 'كَلِمَة', pos: 'Noun / Verb', meaning: 'Meaning', explanation: 'Grammar role' }
+        { word: sentence.split(' ')[0] || 'كَلِمَة', pos: 'Nom / Verbe', meaning: 'Signification', explanation: 'Rôle grammatical (I\'rab)' }
       ],
-      tips: 'Ensure correct vowel endings based on sentence structure (Marfoo, Mansoob, Majroor).'
+      tips: 'Veillez à bien respecter les terminaisons des voyelles selon la fonction grammaticale (Marfou‘, Mansoub, Madjroor).'
     });
   }
 
   try {
-    const systemPrompt = `You are an expert Arabic linguist and teacher for non-native learners.
+    const systemPrompt = `You are an expert Arabic linguist and teacher for French-speaking learners (apprenants francophones).
 Analyze the given Arabic phrase or word provided by the user.
-Provide full accurate vocalization (تشكيل كامل), phonetic transliteration, grammatical role breakdown (مبتدأ، خبر، فاعل، مفعول به، اسم مجرور...), root extraction (الجذر اللغوي), and helpful non-native learner tips.
+Provide full accurate vocalization (تشكيل كامل), French phonetic transliteration, grammatical role breakdown in French terminology (Sujet/Fā‘il, COD/Maf‘ūl bihi, Nom au cas direct/indirect, Mubtada’, Khabar...), 3-letter root (الجذر اللغوي), and helpful tips for French speakers.
 Output MUST be strictly valid JSON in this schema:
 {
   "original": "original text",
   "tashkeel": "vocalized Arabic text with complete harakat",
-  "transliteration": "phonetic romanization",
-  "translation": "clear English translation",
+  "transliteration": "phonetic romanization adapted to French phonetics",
+  "translation": "clear and precise French translation",
   "root": "3-letter root (e.g., ك-ت-ب)",
   "cefrLevel": "Estimated CEFR level (A1, A2, B1, B2, C1, C2)",
   "breakdown": [
-    {"token": "Arabic word", "vocalized": "vocalized", "type": "Noun/Verb/Particle", "irab": "Grammar role simplified for students", "meaning": "English meaning"}
+    {"token": "Arabic word", "vocalized": "vocalized", "type": "Nom/Verbe/Particule", "irab": "Rôle grammatical expliqué simplement", "meaning": "Sens en français"}
   ],
-  "commonMistakes": "Tips to avoid common non-native mistakes with this phrase",
-  "culturalNote": "Any relevant cultural or dialect context"
+  "commonMistakes": "Astuces pour éviter les erreurs fréquentes des francophones",
+  "culturalNote": "Contexte culturel ou linguistique pertinent"
 }`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3.7-flash',
-      contents: `Analyze this Arabic text for a learner: "${sentence}"`,
+      contents: `Analyze this Arabic text for a French-speaking learner: "${sentence}"`,
       config: {
         systemInstruction: systemPrompt,
         responseMimeType: 'application/json',
@@ -164,34 +164,34 @@ Output MUST be strictly valid JSON in this schema:
 
 // 3. AI Custom Practice & Story Generator for any CEFR level
 app.post('/api/generate-practice', async (req: Request, res: Response) => {
-  const { level = 'A1', theme = 'culture', type = 'story' } = req.body;
+  const { level = 'A1', theme = 'culture', type = 'story', userLanguage = 'fr' } = req.body;
 
   const ai = getAI();
   if (!ai) {
     return res.json({
-      title: 'رِحْلَةٌ إِلَى المَدِينَةِ المُنَوَّرَة (A Journey to the Illuminated City)',
+      title: 'رِحْلَةٌ إِلَى المَدِينَةِ المُنَوَّرَة (Un voyage à Médine)',
       arabicText: 'سَافَرَ سَامِي مَعَ عَائِلَتِهِ إِلَى المَدِينَةِ. زَارَ المَسْجِدَ النَّبَوِيَّ وَتَنَاوَلَ التَّمْرَ اللَّذِيذ. كَانَ الجَوُّ لَطِيفًا وَالنَّاسُ كُرَمَاء.',
-      translation: 'Sami traveled with his family to Medina. He visited the Prophet\'s Mosque and tasted delicious dates. The weather was pleasant and the people were generous.',
+      translation: 'Sami a voyagé avec sa famille à Médine. Il a visité la mosquée du Prophète et a dégusté de délicieuses dattes. Le temps était agréable et les gens étaient généreux.',
       vocabulary: [
-        { arabic: 'سَافَرَ', meaning: 'Traveled', transliteration: 'Safara' },
-        { arabic: 'عَائِلَة', meaning: 'Family', transliteration: 'A\'ilah' },
-        { arabic: 'تَمْر', meaning: 'Dates (fruit)', transliteration: 'Tamr' },
-        { arabic: 'كُرَمَاء', meaning: 'Generous (plural)', transliteration: 'Kurama\'' }
+        { arabic: 'سَافَرَ', meaning: 'A voyagé', transliteration: 'Safara' },
+        { arabic: 'عَائِلَة', meaning: 'Famille', transliteration: 'A\'ilah' },
+        { arabic: 'تَمْر', meaning: 'Dattes', transliteration: 'Tamr' },
+        { arabic: 'كُرَمَاء', meaning: 'Généreux (pluriel)', transliteration: 'Kourama\'' }
       ],
       questions: [
         {
-          question: 'مَعَ مَنْ سَافَرَ سَامِي؟ (With whom did Sami travel?)',
-          options: ['مَعَ أَصْدِقَائِهِ (With his friends)', 'مَعَ عَائِلَتِهِ (With his family)', 'بِمُفْرَدِهِ (Alone)'],
+          question: 'مَعَ مَنْ سَافَرَ سَامِي؟ (Avec qui Sami a-t-il voyagé ?)',
+          options: ['مَعَ أَصْدِقَائِهِ (Avec ses amis)', 'مَعَ عَائِلَتِهِ (Avec sa famille)', 'بِمُفْرَدِهِ (Seul)'],
           correctAnswerIndex: 1,
-          explanation: 'النص يذكر: "سَافَرَ سَامِي مَعَ عَائِلَتِهِ"'
+          explanation: 'Le texte précise : "سَافَرَ سَامِي مَعَ عَائِلَتِهِ"'
         }
       ]
     });
   }
 
   try {
-    const prompt = `Generate an engaging interactive Arabic learning unit suited for CEFR level ${level} on the theme "${theme}".
-If level is A1: Focus on short sentences, high-frequency daily vocabulary, self/family/places, complete Tashkeel, phonetics.
+    const prompt = `Generate an engaging interactive Arabic learning unit suited for CEFR level ${level} on the theme "${theme}" for French-speaking learners.
+If level is A1: Focus on short sentences, high-frequency daily vocabulary, self/family/places, complete Tashkeel, French phonetics.
 If level is A2: Daily routines, travel, directions, shopping, simple past/present verbs.
 If level is B1: Personal anecdotes, hobbies, cultural customs, compound sentences.
 If level is B2: Opinions, news summary, social traditions, media analysis.
@@ -200,24 +200,24 @@ If level is C2: Classical literature, poetic metaphors, complex philosophical/li
 
 Output MUST be strictly JSON format matching this schema:
 {
-  "title": "Arabic Title with Tashkeel (English translation)",
-  "arabicText": "Engaging reading passage fully vocalized with tashkeel appropriate for the selected CEFR level",
-  "translation": "Full English translation",
-  "transliteration": "Transliteration for A1-A2",
+  "title": "Titre arabe avec voyelles (Traduction française)",
+  "arabicText": "Texte arabe entièrement vocalisé adapté au niveau CEFR",
+  "translation": "Traduction française complète",
+  "transliteration": "Transcription phonétique adaptée au français",
   "vocabulary": [
-    {"arabic": "الكلمة مع التشكيل", "transliteration": "phonetic", "meaning": "English meaning"}
+    {"arabic": "الكلمة مع التشكيل", "transliteration": "phonétique", "meaning": "Sens en français"}
   ],
   "grammarFocus": {
-    "ruleName": "Name of the grammar concept (e.g. النعت والمنعوت / الجملة الاسمية)",
-    "explanation": "Clear explanation for foreign students",
-    "example": "Example from the passage"
+    "ruleName": "Nom de la règle en arabe et français (ex: النعت والمنعوت / L'adjectif qualificatif)",
+    "explanation": "Explication claire pour apprenants francophones",
+    "example": "Exemple extrait du texte"
   },
   "questions": [
     {
-      "question": "Arabic question with tashkeel and English subtitle",
-      "options": ["Option 1 in Arabic", "Option 2 in Arabic", "Option 3 in Arabic"],
+      "question": "Question en arabe avec sous-titre en français",
+      "options": ["Option 1 en arabe", "Option 2 en arabe", "Option 3 en arabe"],
       "correctAnswerIndex": 0,
-      "explanation": "Why this answer is correct"
+      "explanation": "Pourquoi cette réponse est correcte en français"
     }
   ]
 }`;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CEFRLevel, SupportedLanguage } from '../types';
-import { Sparkles, Flame, Zap, Gem, Award, Search, HelpCircle, Volume2, Globe, Video } from 'lucide-react';
+import { Sparkles, Flame, Zap, Gem, Award, Search, HelpCircle, Volume2, Globe, Video, BookOpen, GraduationCap } from 'lucide-react';
 
 interface NavbarProps {
   currentLevel: CEFRLevel;
@@ -15,6 +15,7 @@ interface NavbarProps {
   onOpenCertificate: () => void;
   onOpenPhonetics: () => void;
   onOpenVideoLibrary: () => void;
+  onOpenReadingLab: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -30,6 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCertificate,
   onOpenPhonetics,
   onOpenVideoLibrary,
+  onOpenReadingLab,
 }) => {
   const levels: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -98,6 +100,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             
             {/* Quick Tools */}
             <div className="flex items-center gap-1">
+              <button
+                id="btn-reading-lab"
+                onClick={onOpenReadingLab}
+                className="p-2 text-emerald-800 hover:text-emerald-950 hover:bg-emerald-100 rounded-lg transition-colors text-xs font-bold flex items-center gap-1 bg-emerald-50 border border-emerald-300 shadow-2xs"
+                title="مختبر القراءة والتهجئة - الصف الأول متقدم"
+              >
+                <GraduationCap className="w-4 h-4 text-emerald-700" />
+                <span className="hidden lg:inline">{language === 'fr' ? '1re Avancé' : language === 'ar' ? 'القراءة (1 متقدم)' : 'Reading Lab'}</span>
+              </button>
+
               <button
                 id="btn-video-library"
                 onClick={onOpenVideoLibrary}

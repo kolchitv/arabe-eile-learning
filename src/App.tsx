@@ -11,6 +11,8 @@ import { PlacementTestModal } from './components/PlacementTestModal';
 import { CertificateModal } from './components/CertificateModal';
 import { PhoneticsGuideModal } from './components/PhoneticsGuideModal';
 import { VideoLibraryModal } from './components/VideoLibraryModal';
+import { ReadingLabModal } from './components/ReadingLabModal';
+import { Footer } from './components/Footer';
 import { CulturalProverbs } from './components/CulturalProverbs';
 import { playSoundEffect } from './utils/audio';
 import {
@@ -60,6 +62,14 @@ export default function App() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [videoModalCategory, setVideoModalCategory] = useState<'all' | 'letters' | 'texts' | 'vocabulary' | 'dialogues'>('all');
   const [videoModalInitialId, setVideoModalInitialId] = useState<string | undefined>(undefined);
+  const [isReadingModalOpen, setIsReadingModalOpen] = useState(false);
+  const [readingModalCategoryId, setReadingModalCategoryId] = useState<string | undefined>(undefined);
+
+  const handleOpenReadingLab = (categoryId?: string) => {
+    setReadingModalCategoryId(categoryId);
+    setIsReadingModalOpen(true);
+    playSoundEffect('tap');
+  };
 
   const handleOpenVideoLibrary = (category?: string, queryOrId?: string) => {
     if (category) {
@@ -115,6 +125,7 @@ export default function App() {
         onOpenCertificate={() => setIsCertificateModalOpen(true)}
         onOpenPhonetics={() => setIsPhoneticsModalOpen(true)}
         onOpenVideoLibrary={() => handleOpenVideoLibrary('all')}
+        onOpenReadingLab={() => handleOpenReadingLab()}
       />
 
       {/* Main Container */}
@@ -137,6 +148,15 @@ export default function App() {
             >
               <Compass className="w-4 h-4" />
               <span>{language === 'ar' ? 'خريطة المستويات' : language === 'fr' ? 'Parcours A1-C2' : 'Curriculum Roadmap'}</span>
+            </button>
+
+            <button
+              onClick={() => handleOpenReadingLab()}
+              className="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-700 text-white shadow-sm shadow-emerald-700/25 hover:brightness-105 active:scale-95"
+            >
+              <GraduationCap className="w-4 h-4 text-amber-300" />
+              <span>{language === 'ar' ? 'مختبر القراءة والتهجئة (الصف 1 متقدم)' : language === 'fr' ? 'Atelier Lecture (1re Avancé)' : 'Reading Lab (1st Grade)'}</span>
+              <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">جديد</span>
             </button>
 
             <button
@@ -310,18 +330,21 @@ export default function App() {
         initialVideoId={videoModalInitialId}
       />
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-serif font-bold text-emerald-800 text-base">عَرَبِيَّتِي</span>
-            <span>• Arabic for Global Learners (A1 to C2)</span>
-          </div>
-          <p className="text-slate-400">
-            Compliant with CEFR (Common European Framework) & ELCO Pedagogical Standards
-          </p>
-        </div>
-      </footer>
+      <ReadingLabModal
+        isOpen={isReadingModalOpen}
+        onClose={() => setIsReadingModalOpen(false)}
+        language={language}
+        initialCategoryId={readingModalCategoryId}
+      />
+
+      {/* Footer ArabFacile.com */}
+      <Footer
+        language={language}
+        onOpenPhonetics={() => setIsPhoneticsModalOpen(true)}
+        onOpenVideoLibrary={() => handleOpenVideoLibrary('all')}
+        onOpenPlacement={() => setIsPlacementModalOpen(true)}
+        onOpenReadingLab={() => handleOpenReadingLab()}
+      />
     </div>
   );
 }

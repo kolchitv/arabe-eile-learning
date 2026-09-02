@@ -13,6 +13,7 @@ import { PhoneticsGuideModal } from './components/PhoneticsGuideModal';
 import { VideoLibraryModal } from './components/VideoLibraryModal';
 import { ReadingLabModal } from './components/ReadingLabModal';
 import { ContinuousSpeakingLab } from './components/ContinuousSpeakingLab';
+import { UnitCurriculumLab } from './components/UnitCurriculumLab';
 import { Footer } from './components/Footer';
 import { CulturalProverbs } from './components/CulturalProverbs';
 import { playSoundEffect } from './utils/audio';
@@ -37,7 +38,7 @@ export default function App() {
     const saved = localStorage.getItem('arabiya_lang');
     return (saved as SupportedLanguage) || 'fr';
   });
-  const [activeView, setActiveView] = useState<'roadmap' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab'>('roadmap');
+  const [activeView, setActiveView] = useState<'roadmap' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab' | 'unit1Lab'>('roadmap');
   const [selectedUnit, setSelectedUnit] = useState<LessonUnit | null>(null);
 
   // Gamification State (with local storage persistence)
@@ -135,6 +136,11 @@ export default function App() {
           setActiveView('speakingLab');
           playSoundEffect('tap');
         }}
+        onOpenUnit1Lab={() => {
+          setActiveView('unit1Lab');
+          setSelectedUnit(null);
+          playSoundEffect('tap');
+        }}
       />
 
       {/* Main Container */}
@@ -157,6 +163,23 @@ export default function App() {
             >
               <Compass className="w-4 h-4" />
               <span>{language === 'ar' ? 'خريطة المستويات' : language === 'fr' ? 'Parcours A1-C2' : 'Curriculum Roadmap'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveView('unit1Lab');
+                setSelectedUnit(null);
+                playSoundEffect('tap');
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeView === 'unit1Lab'
+                  ? 'bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 text-white shadow-sm shadow-amber-500/30'
+                  : 'text-amber-950 bg-amber-100/80 hover:bg-amber-200/90 border border-amber-300/80'
+              }`}
+            >
+              <span className="text-base">👨‍👩‍👧‍👦</span>
+              <span className="font-arabic font-extrabold">{language === 'ar' ? 'الوحدة 1 (الأسرة والمحيط - حوارات التعارف)' : language === 'fr' ? 'Unité 1 (Famille & Dialogues)' : 'Unit 1 (Family & Dialogues)'}</span>
+              <span className="bg-emerald-700 text-white text-[10px] px-1.5 py-0.2 rounded-full font-black">2025</span>
             </button>
 
             <button
@@ -260,11 +283,29 @@ export default function App() {
               language={language}
               onOpenTutor={() => setActiveView('tutor')}
               onOpenSoundGame={() => setActiveView('soundLab')}
+              onOpenUnit1Lab={() => {
+                setActiveView('unit1Lab');
+                playSoundEffect('tap');
+              }}
             />
 
             {/* Cultural wisdom and dialect comparisons widget */}
             <CulturalProverbs language={language} />
           </div>
+        )}
+
+        {activeView === 'unit1Lab' && (
+          <UnitCurriculumLab
+            language={language}
+            onBack={() => {
+              setActiveView('roadmap');
+              playSoundEffect('tap');
+            }}
+            onEarnXp={(amt) => {
+              setXp((x) => x + amt);
+              setGems((g) => g + Math.ceil(amt / 10));
+            }}
+          />
         )}
 
         {activeView === 'lesson' && selectedUnit && (

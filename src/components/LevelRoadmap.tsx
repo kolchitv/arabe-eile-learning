@@ -25,6 +25,7 @@ interface LevelRoadmapProps {
   language: SupportedLanguage;
   onOpenTutor: () => void;
   onOpenSoundGame: () => void;
+  onOpenUnit1Lab?: () => void;
 }
 
 export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
@@ -34,6 +35,7 @@ export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
   language,
   onOpenTutor,
   onOpenSoundGame,
+  onOpenUnit1Lab,
 }) => {
   const unitsInLevel = CURRICULUM_UNITS.filter((u) => u.level === currentLevel);
 
@@ -192,6 +194,47 @@ export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Special Feature: Unit 1 Official Syllabus (المجال الثاني: الأسرة والمحيط) */}
+      {onOpenUnit1Lab && (
+        <div
+          onClick={onOpenUnit1Lab}
+          className="p-6 rounded-3xl bg-gradient-to-r from-emerald-800 via-teal-900 to-amber-950 text-white shadow-xl border-2 border-amber-400/80 hover:border-amber-300 transition-all cursor-pointer group flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-48 h-48 bg-amber-400/10 rounded-full blur-2xl pointer-events-none" />
+          
+          <div className="space-y-2 relative z-10">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                توزيع منهاج 2024/2025
+              </span>
+              <span className="bg-white/20 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                5 مكونات متكررة + حوارات التعارف
+              </span>
+            </div>
+            
+            <h3 className="text-xl sm:text-2xl font-black text-amber-200 font-arabic">
+              المجال الثاني: الأُسْرَةُ وَالمُحِيطُ (الحصص 1 إلى 6)
+            </h3>
+            
+            <p className="text-xs sm:text-sm text-emerald-100 font-sans max-w-xl">
+              {language === 'fr'
+                ? 'Dialogues de présentation en phrases courtes à mémoriser, consignes de classe, parler en continu, lecture (م، ك، ل، ن، س) et fiche d’identité.'
+                : 'حوارات التعارف مقسمة لجمل قصيرة للحفظ والتسميع، تعليمات القسم، الاسترسال والنشيد، القراءة والكتابة وبطاقة التعريف.'}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 relative z-10 self-end md:self-center shrink-0">
+            <div className="text-right hidden sm:block">
+              <span className="text-xs font-bold text-amber-300 block">6 حصص تفاعلية</span>
+              <span className="text-[10px] text-emerald-200 block">وضع التسميع الفوري 🧠</span>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-xl shadow-lg group-hover:scale-110 transition-transform">
+              <Play className="w-6 h-6 fill-slate-950 ml-0.5" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Curriculum Units List for Selected Level */}
       <div className="space-y-4">

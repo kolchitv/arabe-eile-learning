@@ -17,6 +17,7 @@ interface NavbarProps {
   onOpenVideoLibrary: () => void;
   onOpenReadingLab: () => void;
   onOpenSpeakingLab?: () => void;
+  onOpenUnit1Lab?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -34,6 +35,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenVideoLibrary,
   onOpenReadingLab,
   onOpenSpeakingLab,
+  onOpenUnit1Lab,
 }) => {
   const levels: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -102,6 +104,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             
             {/* Quick Tools */}
             <div className="flex items-center gap-1">
+              {onOpenUnit1Lab && (
+                <button
+                  id="btn-unit1-lab"
+                  onClick={onOpenUnit1Lab}
+                  className="p-2 text-amber-950 hover:bg-amber-200/80 rounded-lg transition-colors text-xs font-bold flex items-center gap-1.5 bg-gradient-to-r from-amber-300 to-amber-400 border border-amber-500/80 shadow-xs"
+                  title="منهاج الوحدة 1 (المجال الثاني: الأسرة والمحيط - حوارات التعارف والمكونات الـ5)"
+                >
+                  <span className="text-sm">👨‍👩‍👧‍👦</span>
+                  <span className="hidden sm:inline font-black font-arabic">{language === 'fr' ? 'Unité 1 (Famille)' : 'الوحدة 1 (الأسرة)'}</span>
+                  <span className="bg-emerald-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-bold">2025</span>
+                </button>
+              )}
+
               {onOpenSpeakingLab && (
                 <button
                   id="btn-speaking-lab"

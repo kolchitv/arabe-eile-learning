@@ -121,6 +121,29 @@ export default function App() {
     localStorage.setItem('arabiya_completed_units', JSON.stringify(completedUnits));
   }, [language, xp, streak, gems, completedUnits]);
 
+  const handleSelectUnitNumber = (unitNum: number) => {
+    if (unitNum === 1) {
+      setActiveView('unit1Lab');
+      setSelectedUnit(null);
+      playSoundEffect('tap');
+      return;
+    }
+    // Find unit matching unitNum in current level or A2/A1
+    const matchingUnit =
+      CURRICULUM_UNITS.find((u) => u.level === currentLevel && u.unitNumber === unitNum) ||
+      CURRICULUM_UNITS.find((u) => u.level === 'A2' && u.unitNumber === unitNum) ||
+      CURRICULUM_UNITS.find((u) => u.level === 'A1' && u.unitNumber === unitNum) ||
+      CURRICULUM_UNITS.find((u) => u.unitNumber === unitNum);
+
+    if (matchingUnit) {
+      handleSelectUnit(matchingUnit);
+      playSoundEffect('tap');
+    } else {
+      setActiveView('roadmap');
+      playSoundEffect('tap');
+    }
+  };
+
   const handleSelectUnit = (unit: LessonUnit) => {
     setSelectedUnit(unit);
     setActiveView('lesson');
@@ -169,6 +192,7 @@ export default function App() {
           setSelectedUnit(null);
           playSoundEffect('tap');
         }}
+        onSelectUnitNumber={handleSelectUnitNumber}
       />
 
       {/* Main Container */}

@@ -34,6 +34,7 @@ interface NavbarProps {
   onOpenReadingLab: () => void;
   onOpenSpeakingLab?: () => void;
   onOpenUnit1Lab?: () => void;
+  onSelectUnitNumber?: (unitNumber: number) => void;
   onOpenSpeedReading?: () => void;
   onOpenThematicVocab?: (categoryId?: string) => void;
   onOpenTextStudio?: () => void;
@@ -55,12 +56,15 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenReadingLab,
   onOpenSpeakingLab,
   onOpenUnit1Lab,
+  onSelectUnitNumber,
   onOpenSpeedReading,
   onOpenThematicVocab,
   onOpenTextStudio,
 }) => {
   const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
+  const [isUnitsDropdownOpen, setIsUnitsDropdownOpen] = useState(false);
   const toolsDropdownRef = useRef<HTMLDivElement>(null);
+  const unitsDropdownRef = useRef<HTMLDivElement>(null);
 
   const levels: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -73,16 +77,77 @@ export const Navbar: React.FC<NavbarProps> = ({
     C2: { nameAr: 'الفصيح (الإتقان)', nameEn: 'Mastery', nameFr: 'Maîtrise C2' },
   };
 
-  // Close dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (toolsDropdownRef.current && !toolsDropdownRef.current.contains(e.target as Node)) {
         setIsToolsDropdownOpen(false);
       }
+      if (unitsDropdownRef.current && !unitsDropdownRef.current.contains(e.target as Node)) {
+        setIsUnitsDropdownOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Units list (Unité 1 à 6)
+  const curriculumUnitsList = [
+    {
+      num: 1,
+      titleAr: 'الوحدة 1: الأسرة والمحيط والتعارف',
+      titleFr: 'Unité 1 : Famille & Présentation',
+      titleEn: 'Unit 1: Family & Introductions',
+      icon: '👨‍👩‍👧‍👦',
+      badge: 'الأسرة',
+      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+    },
+    {
+      num: 2,
+      titleAr: 'الوحدة 2: قوس قزح والألوان والأشياء',
+      titleFr: 'Unité 2 : Couleurs & Arc-en-ciel',
+      titleEn: 'Unit 2: Colors & Rainbow',
+      icon: '🎨',
+      badge: 'الألوان',
+      badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
+    },
+    {
+      num: 3,
+      titleAr: 'الوحدة 3: غرفة سامي وظروف المكان والتسوق',
+      titleFr: 'Unité 3 : Chambre & Prépositions',
+      titleEn: 'Unit 3: Room & Prepositions',
+      icon: '🛏️',
+      badge: 'المكان',
+      badgeColor: 'bg-teal-100 text-teal-800 border-teal-300',
+    },
+    {
+      num: 4,
+      titleAr: 'الوحدة 4: برنامج سامي وأيام الأسبوع والحفلات',
+      titleFr: 'Unité 4 : Emploi du temps & Semaine',
+      titleEn: 'Unit 4: Weekly Schedule & Days',
+      icon: '📅',
+      badge: 'الأيام',
+      badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
+    },
+    {
+      num: 5,
+      titleAr: 'الوحدة 5: سامي والقطة (الجملة الاسمية والفعلية)',
+      titleFr: 'Unité 5 : Sami et la Chatte',
+      titleEn: 'Unit 5: Sami & the Cat',
+      icon: '🐱',
+      badge: 'القصة',
+      badgeColor: 'bg-rose-100 text-rose-800 border-rose-300',
+    },
+    {
+      num: 6,
+      titleAr: 'الوحدة 6: الفصول الأربعة وجمال الطبيعة',
+      titleFr: 'Unité 6 : Les 4 Saisons & Nature',
+      titleEn: 'Unit 6: Four Seasons & Nature',
+      icon: '🌸',
+      badge: 'الفصول',
+      badgeColor: 'bg-green-100 text-green-800 border-green-300',
+    },
+  ];
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/80 shadow-sm shadow-amber-500/5">
@@ -210,18 +275,91 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* 3. منهاج الوحدة 1 (الأسرة والمحيط) */}
-            {onOpenUnit1Lab && (
+            {/* 3. قائمة الوحدات (Unité 1 إلى 6) المنظمة مع أزرار الأرقام */}
+            <div className="relative" ref={unitsDropdownRef}>
               <button
-                id="btn-unit1-lab"
-                onClick={onOpenUnit1Lab}
-                className="px-3 py-1.5 text-amber-950 hover:bg-amber-200/90 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 bg-white border border-amber-300 shadow-2xs active:scale-95 shrink-0"
-                title="منهاج الوحدة 1 (المجال الثاني: الأسرة والمحيط - حوارات التعارف والمكونات الـ5)"
+                id="btn-nav-units-dropdown"
+                onClick={() => setIsUnitsDropdownOpen(!isUnitsDropdownOpen)}
+                className="px-3 py-1.5 text-amber-950 hover:bg-amber-200/90 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 bg-gradient-to-r from-amber-100 to-amber-50 border border-amber-400/90 shadow-2xs active:scale-95 shrink-0"
+                title="الوحدات الدراسية (من الوحدة 1 إلى الوحدة 6)"
               >
-                <span className="text-base">👨‍👩‍👧‍👦</span>
-                <span className="font-black font-arabic">{language === 'fr' ? 'Unité 1 (Famille)' : language === 'ar' ? 'الوحدة 1 (الأسرة)' : 'Unit 1 (Family)'}</span>
+                <BookOpen className="w-3.5 h-3.5 text-amber-700" />
+                <span className="font-extrabold font-arabic">
+                  {language === 'fr' ? 'Unités (1 à 6)' : language === 'ar' ? 'الوحدات (1 إلى 6)' : 'Units (1 to 6)'}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 text-amber-700 transition-transform ${isUnitsDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
-            )}
+
+              {/* Units Dropdown List with Numbers 1-6 */}
+              {isUnitsDropdownOpen && (
+                <div className="absolute right-0 sm:right-auto sm:left-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border-2 border-amber-300 p-2 z-50 animate-fade-in space-y-1.5 max-h-[80vh] overflow-y-auto">
+                  <div className="px-2 py-1.5 border-b border-amber-100 flex items-center justify-between">
+                    <span className="text-[11px] font-black text-amber-900 font-arabic">
+                      {language === 'ar' ? 'اختر الوحدة الدراسية (1 - 6):' : 'Sélectionnez l’unité (1 à 6) :'}
+                    </span>
+                    <span className="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+                      6 {language === 'ar' ? 'وحدات' : 'Unités'}
+                    </span>
+                  </div>
+
+                  {/* Quick Number Pills (1 to 6) */}
+                  <div className="grid grid-cols-6 gap-1 p-1 bg-amber-50/70 rounded-xl border border-amber-200">
+                    {[1, 2, 3, 4, 5, 6].map((num) => (
+                      <button
+                        key={`pill-u-${num}`}
+                        id={`btn-quick-unit-${num}`}
+                        onClick={() => {
+                          setIsUnitsDropdownOpen(false);
+                          if (num === 1 && onOpenUnit1Lab) {
+                            onOpenUnit1Lab();
+                          } else if (onSelectUnitNumber) {
+                            onSelectUnitNumber(num);
+                          }
+                        }}
+                        className="py-1 rounded-lg text-xs font-black bg-white hover:bg-amber-400 hover:text-slate-950 text-amber-900 border border-amber-300 transition-all shadow-2xs active:scale-95 flex flex-col items-center justify-center"
+                        title={`الوحدة ${num}`}
+                      >
+                        <span className="text-[10px] opacity-70">U</span>
+                        <span className="text-sm font-black leading-none">{num}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Detailed Unit Item Buttons */}
+                  <div className="space-y-1 pt-1">
+                    {curriculumUnitsList.map((unit) => (
+                      <button
+                        key={`unit-list-item-${unit.num}`}
+                        id={`btn-unit-menu-${unit.num}`}
+                        onClick={() => {
+                          setIsUnitsDropdownOpen(false);
+                          if (unit.num === 1 && onOpenUnit1Lab) {
+                            onOpenUnit1Lab();
+                          } else if (onSelectUnitNumber) {
+                            onSelectUnitNumber(unit.num);
+                          }
+                        }}
+                        className="w-full text-right sm:text-left px-2.5 py-2 rounded-xl text-xs font-bold hover:bg-amber-50 flex items-center justify-between text-slate-800 transition-all border border-transparent hover:border-amber-200 active:scale-[0.98]"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-lg bg-amber-100 flex items-center justify-center text-sm font-black text-amber-900 border border-amber-300 shrink-0">
+                            {unit.num}
+                          </span>
+                          <div className="flex flex-col text-start">
+                            <span className="font-arabic font-extrabold text-slate-900 text-xs line-clamp-1">
+                              {language === 'fr' ? unit.titleFr : language === 'ar' ? unit.titleAr : unit.titleEn}
+                            </span>
+                          </div>
+                        </div>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold border shrink-0 ${unit.badgeColor}`}>
+                          {unit.icon} {unit.badge}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* 4. مختبر التعبير الشفهي */}
             {onOpenSpeakingLab && (

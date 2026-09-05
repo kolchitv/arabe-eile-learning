@@ -16,7 +16,12 @@ import {
   Mic,
   ChevronDown,
   LayoutGrid,
+  Layers,
+  FileText,
+  AlignJustify,
+  Type,
 } from 'lucide-react';
+import { ReadingHierarchyTab } from '../components/ReadingHierarchySection';
 
 interface NavbarProps {
   currentLevel: CEFRLevel;
@@ -31,13 +36,13 @@ interface NavbarProps {
   onOpenCertificate: () => void;
   onOpenPhonetics: () => void;
   onOpenVideoLibrary: () => void;
-  onOpenReadingLab: () => void;
+  onOpenReadingLab: (hierarchyTab?: ReadingHierarchyTab) => void;
   onOpenSpeakingLab?: () => void;
   onOpenUnit1Lab?: () => void;
   onSelectUnitNumber?: (unitNumber: number) => void;
   onOpenSpeedReading?: () => void;
   onOpenThematicVocab?: (categoryId?: string) => void;
-  onOpenTextStudio?: () => void;
+  onOpenTextStudio?: (initialText?: string, hierarchyTab?: ReadingHierarchyTab) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -63,8 +68,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
   const [isUnitsDropdownOpen, setIsUnitsDropdownOpen] = useState(false);
+  const [isLectureDropdownOpen, setIsLectureDropdownOpen] = useState(false);
   const toolsDropdownRef = useRef<HTMLDivElement>(null);
   const unitsDropdownRef = useRef<HTMLDivElement>(null);
+  const lectureDropdownRef = useRef<HTMLDivElement>(null);
 
   const levels: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -85,6 +92,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       }
       if (unitsDropdownRef.current && !unitsDropdownRef.current.contains(e.target as Node)) {
         setIsUnitsDropdownOpen(false);
+      }
+      if (lectureDropdownRef.current && !lectureDropdownRef.current.contains(e.target as Node)) {
+        setIsLectureDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -262,18 +272,169 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* 2. قارئ ومسجل النصوص المخصص */}
-            {onOpenTextStudio && (
-              <button
-                id="btn-nav-text-studio"
-                onClick={onOpenTextStudio}
-                className="px-3 py-1.5 text-slate-950 hover:bg-amber-200/90 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 bg-amber-100 border border-amber-400 shadow-2xs active:scale-95 shrink-0"
-                title="قارئ النصوص المخصص مع تتبع الكلمات بالدائرة المضيئة وتسجيل الصوت"
-              >
-                <span className="text-base">🎙️</span>
-                <span className="font-arabic">{language === 'fr' ? 'Studio Textes & Voix' : language === 'ar' ? 'قارئ ومسجل النصوص' : 'Text & Voice Studio'}</span>
-              </button>
-            )}
+            {/* 2. قسم قراءة Lecture مع القائمة المنسدلة: حروف، مقاطع، كلمات، جمل/نصوص */}
+            <div className="relative" ref={lectureDropdownRef}>
+              <div className="flex items-center rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-orange-400 p-0.5 border border-amber-500 shadow-sm shrink-0">
+                <button
+                  id="btn-nav-lecture-main"
+                  onClick={() => {
+                    if (onOpenTextStudio) {
+                      onOpenTextStudio();
+                    }
+                  }}
+                  className="px-3 py-1 text-slate-950 hover:bg-amber-300/80 rounded-lg transition-all text-xs font-black flex items-center gap-1.5 active:scale-95"
+                  title="قراءة Lecture - قارئ النصوص الذكي وسلم التدرج القرائي"
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-slate-950" />
+                  <span className="font-arabic font-black">
+                    {language === 'fr' ? 'Lecture (قراءة)' : language === 'ar' ? 'قراءة Lecture' : 'Reading Lecture'}
+                  </span>
+                  <span className="bg-slate-950 text-amber-300 text-[9px] px-1.5 py-0.2 rounded-full font-black">
+                    شامل 📖
+                  </span>
+                </button>
+
+                <button
+                  id="btn-nav-lecture-dropdown"
+                  onClick={() => setIsLectureDropdownOpen(!isLectureDropdownOpen)}
+                  className="px-1.5 py-1 text-slate-950 hover:bg-amber-400 rounded-lg transition-colors border-r border-amber-500/50 flex items-center justify-center"
+                  title="قائمة مستويات القراءة: حروف، مقاطع، كلمات، جمل/نصوص"
+                >
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-950 transition-transform ${isLectureDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+
+              {/* Lecture Hierarchy Dropdown Menu */}
+              {isLectureDropdownOpen && (
+                <div className="absolute right-0 sm:right-auto sm:left-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border-2 border-amber-400 p-2.5 z-50 animate-fade-in space-y-1.5">
+                  <div className="px-2 py-1.5 border-b border-amber-100 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-black text-amber-950 font-arabic block">
+                        {language === 'ar' ? 'قائمة القراءة (Lecture):' : 'Niveaux de Lecture :'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-arabic">
+                        {language === 'ar' ? 'اختر المستوى التعليمي للتدرج في القراءة' : 'Progression pédagogique'}
+                      </span>
+                    </div>
+                    <span className="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+                      4 مستويات
+                    </span>
+                  </div>
+
+                  {/* 1. حروف Lettres */}
+                  <button
+                    onClick={() => {
+                      setIsLectureDropdownOpen(false);
+                      if (onOpenTextStudio) {
+                        onOpenTextStudio(undefined, 'letters');
+                      }
+                    }}
+                    className="w-full text-right sm:text-left px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-50 flex items-center justify-between text-slate-800 transition-all border border-amber-100 hover:border-amber-300 group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-arabic font-black text-base border border-amber-300 group-hover:scale-105 transition-transform">
+                        <Type className="w-4 h-4 text-amber-800" />
+                      </div>
+                      <div className="flex flex-col text-start">
+                        <span className="font-arabic font-black text-slate-900 text-sm">
+                          1. حُرُوف (Lettres)
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-arabic">
+                          28 حرفاً مع الحركات والمدود ومواضع الحرف
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-200">
+                      28 حرفاً
+                    </span>
+                  </button>
+
+                  {/* 2. مقاطع Syllabes */}
+                  <button
+                    onClick={() => {
+                      setIsLectureDropdownOpen(false);
+                      if (onOpenTextStudio) {
+                        onOpenTextStudio(undefined, 'syllables');
+                      }
+                    }}
+                    className="w-full text-right sm:text-left px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-teal-50 flex items-center justify-between text-slate-800 transition-all border border-teal-100 hover:border-teal-300 group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-teal-100 text-teal-900 flex items-center justify-center font-arabic font-black text-base border border-teal-300 group-hover:scale-105 transition-transform">
+                        <Layers className="w-4 h-4 text-teal-800" />
+                      </div>
+                      <div className="flex flex-col text-start">
+                        <span className="font-arabic font-black text-slate-900 text-sm">
+                          2. مَقَاطِع (Syllabes)
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-arabic">
+                          المقاطع الصوتية بالحركات والمدود والسكون والشدة
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-teal-100 text-teal-900 border border-teal-200">
+                      تقطيع صوتي
+                    </span>
+                  </button>
+
+                  {/* 3. كلمات Mots */}
+                  <button
+                    onClick={() => {
+                      setIsLectureDropdownOpen(false);
+                      if (onOpenTextStudio) {
+                        onOpenTextStudio(undefined, 'words');
+                      }
+                    }}
+                    className="w-full text-right sm:text-left px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-purple-50 flex items-center justify-between text-slate-800 transition-all border border-purple-100 hover:border-purple-300 group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-900 flex items-center justify-center font-arabic font-black text-base border border-purple-300 group-hover:scale-105 transition-transform">
+                        <FileText className="w-4 h-4 text-purple-800" />
+                      </div>
+                      <div className="flex flex-col text-start">
+                        <span className="font-arabic font-black text-slate-900 text-sm">
+                          3. كَلِمَات (Mots)
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-arabic">
+                          كلمات مصنفة مع التقطيع الهجائي والترجمة
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-100 text-purple-900 border border-purple-200">
+                      تهجئة كاملة
+                    </span>
+                  </button>
+
+                  {/* 4. جمل / نصوص Phrases & Textes */}
+                  <button
+                    onClick={() => {
+                      setIsLectureDropdownOpen(false);
+                      if (onOpenTextStudio) {
+                        onOpenTextStudio(undefined, 'sentences');
+                      }
+                    }}
+                    className="w-full text-right sm:text-left px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-rose-50 flex items-center justify-between text-slate-800 transition-all border border-rose-100 hover:border-rose-300 group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-900 flex items-center justify-center font-arabic font-black text-base border border-rose-300 group-hover:scale-105 transition-transform">
+                        <AlignJustify className="w-4 h-4 text-rose-800" />
+                      </div>
+                      <div className="flex flex-col text-start">
+                        <span className="font-arabic font-black text-slate-900 text-sm">
+                          4. جُمَل / نُصُوص (Phrases & Textes)
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-arabic">
+                          نصوص القراءة والتتبع البصري والأسئلة والتسجيل
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-rose-100 text-rose-900 border border-rose-200">
+                      15 نصاً دراسياً
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* 3. قائمة الوحدات (Unité 1 إلى 6) المنظمة مع أزرار الأرقام */}
             <div className="relative" ref={unitsDropdownRef}>
@@ -377,7 +538,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* 5. مختبر القراءة والتهجئة */}
             <button
               id="btn-reading-lab"
-              onClick={onOpenReadingLab}
+              onClick={() => onOpenReadingLab()}
               className="px-3 py-1.5 text-emerald-800 hover:text-emerald-950 hover:bg-emerald-100 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 shadow-2xs active:scale-95 shrink-0"
               title="مختبر القراءة والتهجئة - الصف الأول متقدم"
             >

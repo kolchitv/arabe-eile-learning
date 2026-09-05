@@ -17,6 +17,7 @@ import { ContinuousSpeakingLab } from './components/ContinuousSpeakingLab';
 import { UnitCurriculumLab } from './components/UnitCurriculumLab';
 import { VisualVocabularyHub } from './components/VisualVocabularyHub';
 import { CustomTextReaderStudio } from './components/CustomTextReaderStudio';
+import { ReadingHierarchyTab } from './components/ReadingHierarchySection';
 import { ThematicCategoryId } from './data/thematicVocabularyData';
 import { Footer } from './components/Footer';
 import { CulturalProverbs } from './components/CulturalProverbs';
@@ -77,6 +78,9 @@ export default function App() {
   const [readingModalCategoryId, setReadingModalCategoryId] = useState<string | undefined>(undefined);
   const [isSpeedReadingModalOpen, setIsSpeedReadingModalOpen] = useState(false);
 
+  const [textStudioInitialText, setTextStudioInitialText] = useState<string | undefined>(undefined);
+  const [textStudioInitialHierarchyTab, setTextStudioInitialHierarchyTab] = useState<ReadingHierarchyTab | undefined>(undefined);
+
   const handleOpenReadingLab = (categoryId?: string) => {
     setReadingModalCategoryId(categoryId);
     setIsReadingModalOpen(true);
@@ -95,7 +99,9 @@ export default function App() {
     playSoundEffect('tap');
   };
 
-  const handleOpenTextStudio = () => {
+  const handleOpenTextStudio = (initialText?: string, hierarchyTab?: ReadingHierarchyTab) => {
+    setTextStudioInitialText(initialText);
+    setTextStudioInitialHierarchyTab(hierarchyTab);
     setActiveView('textStudio');
     setSelectedUnit(null);
     playSoundEffect('tap');
@@ -233,16 +239,16 @@ export default function App() {
 
             <button
               id="btn-strip-text-studio"
-              onClick={handleOpenTextStudio}
+              onClick={() => handleOpenTextStudio()}
               className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 ${
                 activeView === 'textStudio'
                   ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/30 ring-2 ring-amber-400'
                   : 'text-slate-950 bg-amber-200 hover:bg-amber-300 border border-amber-400'
               }`}
             >
-              <span className="text-base">🎙️</span>
-              <span className="font-arabic">{language === 'ar' ? 'قارئ ومسجل النصوص' : language === 'fr' ? 'Studio Textes & Voix' : 'Text Studio'}</span>
-              <span className="bg-slate-950 text-amber-300 text-[9px] px-1.5 py-0.2 rounded-full font-black">جديد ✨</span>
+              <BookOpen className="w-4 h-4" />
+              <span className="font-arabic">{language === 'ar' ? 'قراءة Lecture' : language === 'fr' ? 'Lecture (قراءة)' : 'Reading Studio'}</span>
+              <span className="bg-slate-950 text-amber-300 text-[9px] px-1.5 py-0.2 rounded-full font-black">حروف، مقاطع، نصوص</span>
             </button>
 
             <button
@@ -384,7 +390,10 @@ export default function App() {
 
         {activeView === 'textStudio' && (
           <CustomTextReaderStudio
+            key={`${textStudioInitialHierarchyTab || 'default'}-${textStudioInitialText ? 'text' : 'notext'}`}
             language={language}
+            initialText={textStudioInitialText}
+            initialHierarchyTab={textStudioInitialHierarchyTab}
             onBack={() => {
               setActiveView('roadmap');
               playSoundEffect('tap');

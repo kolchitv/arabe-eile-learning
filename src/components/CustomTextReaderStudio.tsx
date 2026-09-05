@@ -34,10 +34,14 @@ import {
   Sparkle,
   Bookmark,
   Award,
+  Layers,
+  Type,
+  AlignJustify,
 } from 'lucide-react';
 import { speakArabic, stopAudio, playSoundEffect } from '../utils/audio';
 import { SupportedLanguage } from '../types';
 import { PRESET_TEXTS, PresetText } from '../data/readingStudioTexts';
+import { ReadingHierarchySection, ReadingHierarchyTab } from './ReadingHierarchySection';
 import confetti from 'canvas-confetti';
 
 interface CustomTextReaderStudioProps {
@@ -45,6 +49,7 @@ interface CustomTextReaderStudioProps {
   onBack?: () => void;
   onEarnXp?: (amount: number) => void;
   initialText?: string;
+  initialHierarchyTab?: ReadingHierarchyTab;
 }
 
 export type HighlightStyle = 'circle' | 'karaoke' | 'underline' | 'zoom';
@@ -54,6 +59,7 @@ export const CustomTextReaderStudio: React.FC<CustomTextReaderStudioProps> = ({
   onBack,
   onEarnXp,
   initialText = PRESET_TEXTS[0].textAr,
+  initialHierarchyTab,
 }) => {
   // Current active preset (if any)
   const [selectedPresetId, setSelectedPresetId] = useState<string>(PRESET_TEXTS[0].id);
@@ -63,7 +69,12 @@ export const CustomTextReaderStudio: React.FC<CustomTextReaderStudioProps> = ({
   // Text Content State
   const [customText, setCustomText] = useState<string>(initialText);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'reader' | 'oralQuestions' | 'thinking' | 'vocab'>('reader');
+  const [activeTab, setActiveTab] = useState<'reader' | 'hierarchy' | 'oralQuestions' | 'thinking' | 'vocab'>(
+    initialHierarchyTab ? 'hierarchy' : 'reader'
+  );
+  const [hierarchySubTab, setHierarchySubTab] = useState<ReadingHierarchyTab>(
+    initialHierarchyTab || 'letters'
+  );
 
   // Question answers / practice state
   const [answeredQuestions, setAnsweredQuestions] = useState<Record<string, boolean>>({});
@@ -96,9 +107,32 @@ export const CustomTextReaderStudio: React.FC<CustomTextReaderStudioProps> = ({
   const wordsContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Get active preset object
-  const currentPreset = useMemo(() => {
-    return PRESET_TEXTS.find((p) => p.id === selectedPresetId) || PRESET_TEXTS[0];
+  const currentPresetIndex = useMemo(() => {
+    return PRESET_TEXTS.findIndex((p) => p.id === selectedPresetId);
   }, [selectedPresetId]);
+
+  const currentPreset = useMemo(() => {
+    if (currentPresetIndex >= 0) return PRESET_TEXTS[currentPresetIndex];
+    return PRESET_TEXTS.find((p) => p.id === selectedPresetId) || PRESET_TEXTS[0];
+  }, [selectedPresetId, currentPresetIndex]);
+
+  // Previous / Next Preset Handlers
+  const hasPreviousPreset = currentPresetIndex > 0;
+  const hasNextPreset = currentPresetIndex >= 0 && currentPresetIndex < PRESET_TEXTS.length - 1;
+
+  const handlePreviousPreset = () => {
+    if (hasPreviousPreset) {
+      const prevPreset = PRESET_TEXTS[currentPresetIndex - 1];
+      handleSelectPreset(prevPreset);
+    }
+  };
+
+  const handleNextPreset = () => {
+    if (hasNextPreset) {
+      const nextPreset = PRESET_TEXTS[currentPresetIndex + 1];
+      handleSelectPreset(nextPreset);
+    }
+  };
 
   // Categories list
   const categories = useMemo(() => {
@@ -593,9 +627,24 @@ export const CustomTextReaderStudio: React.FC<CustomTextReaderStudioProps> = ({
       </AnimatePresence>
 
       {/* ========================================================================= */}
-      {/* 3. SECTION NAVIGATION TABS (Reader / Oral Questions / Thinking / Vocab)  */}
+      {/* 3. SECTION NAVIGATION TABS (Hierarchy / Reader / Oral Questions / Thinking / Vocab)  */}
       {/* ========================================================================= */}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80">
+        <button
+          onClick={() => {
+            setActiveTab('hierarchy');
+            playSoundEffect('tap');
+          }}
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 ${
+            activeTab === 'hierarchy'
+              ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black shadow-sm'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>{language === 'ar' ? 'سُلَّمُ الْقِرَاءَةِ (حروف، مقاطع، كلمات، جمل) 📚' : 'Échelle de lecture 📚'}</span>
+        </button>
+
         <button
           onClick={() => {
             setActiveTab('reader');
@@ -664,7 +713,29 @@ export const CustomTextReaderStudio: React.FC<CustomTextReaderStudioProps> = ({
       </div>
 
       {/* ========================================================================= */}
-      {/* 4. TAB 1: READING STAGE & TELEPROMPTER                                    */}
+      {/* 4. TAB 0: READING HIERARCHY (Letters -> Syllables -> Words -> Sentences)   */}
+      {/* ========================================================================= */}
+      {activeTab === 'hierarchy' && (
+        <div className="space-y-4">
+          <ReadingHierarchySection
+            language={language}
+            activeSubTab={hierarchySubTab}
+            onSelectSubTab={(tab) => {
+              setHierarchySubTab(tab);
+            }}
+            onSelectSentenceForReader={(sentenceText) => {
+              setCustomText(sentenceText);
+              setSelectedPresetId('');
+              setActiveTab('reader');
+              playSoundEffect('tap');
+            }}
+            onEarnXp={onEarnXp}
+          />
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 5. TAB 1: READING STAGE & TELEPROMPTER                                    */}
       {/* ========================================================================= */}
       {activeTab === 'reader' && (
         <div className="space-y-4">
@@ -913,6 +984,72 @@ export const CustomTextReaderStudio: React.FC<CustomTextReaderStudioProps> = ({
 
             </div>
 
+          </div>
+
+          {/* Previous Text / Next Text Navigation Bar (اسفل النصوص) */}
+          <div className="bg-white/95 backdrop-blur-md rounded-3xl p-4 sm:p-5 border-2 border-amber-200/90 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* Previous Text Button */}
+            <button
+              onClick={handlePreviousPreset}
+              disabled={!hasPreviousPreset}
+              className={`w-full sm:w-auto px-5 py-3.5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all border-2 ${
+                hasPreviousPreset
+                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20 active:scale-95 cursor-pointer'
+                  : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
+              }`}
+            >
+              <ChevronRight className="w-5 h-5" />
+              <div className="text-right">
+                <span className="block text-xs uppercase tracking-wider font-bold">
+                  {language === 'ar' ? 'النَّصُّ السَّابِقُ' : 'Texte précédent'}
+                </span>
+                {hasPreviousPreset && (
+                  <span className="block text-[11px] font-normal text-slate-900 line-clamp-1 font-arabic">
+                    {PRESET_TEXTS[currentPresetIndex - 1]?.titleAr}
+                  </span>
+                )}
+              </div>
+            </button>
+
+            {/* Current Text Indicator / Counter */}
+            <div className="flex flex-col items-center justify-center text-center px-4">
+              <span className="text-xs font-bold text-slate-500 font-arabic">
+                {language === 'ar' ? 'فهرس النصوص الدراسية' : 'Index des textes'}
+              </span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-xs font-black font-mono border border-amber-200">
+                  {currentPresetIndex >= 0 ? `${currentPresetIndex + 1} / ${PRESET_TEXTS.length}` : 'نص مخصص'}
+                </span>
+              </div>
+              {currentPreset && (
+                <span className="text-xs font-black text-slate-800 font-arabic mt-1">
+                  {currentPreset.titleAr}
+                </span>
+              )}
+            </div>
+
+            {/* Next Text Button */}
+            <button
+              onClick={handleNextPreset}
+              disabled={!hasNextPreset}
+              className={`w-full sm:w-auto px-5 py-3.5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all border-2 ${
+                hasNextPreset
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-emerald-500 shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer'
+                  : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
+              }`}
+            >
+              <div className="text-left sm:text-right">
+                <span className="block text-xs uppercase tracking-wider font-bold">
+                  {language === 'ar' ? 'النَّصُّ التَّالِي' : 'Texte suivant'}
+                </span>
+                {hasNextPreset && (
+                  <span className="block text-[11px] font-normal text-emerald-100 line-clamp-1 font-arabic">
+                    {PRESET_TEXTS[currentPresetIndex + 1]?.titleAr}
+                  </span>
+                )}
+              </div>
+              <ChevronLeft className="w-5 h-5" />
+            </button>
           </div>
         </div>
       )}

@@ -399,43 +399,52 @@ export const VisualVocabularyHub: React.FC<VisualVocabularyHubProps> = ({
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. THEMATIC CATEGORIES QUICK SELECTOR BAR                                 */}
+      {/* 2. THEMATIC CATEGORIES OR DIRECT SELECTION HEADER                         */}
       {/* ========================================================================= */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs text-slate-600 px-1">
-          <span className="font-extrabold text-slate-800 flex items-center gap-1.5">
-            <BookOpen className="w-4 h-4 text-amber-600" />
-            <span>{language === 'ar' ? 'اختر مجال المفردات المصورة :' : language === 'fr' ? 'Choisissez une thématique :' : 'Select a theme :'}</span>
-          </span>
-          <span className="text-slate-500 font-mono">
-            {filteredWords.length} {language === 'fr' ? 'mots affichés' : 'كلمة معروضة'}
-          </span>
-        </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-          <button
-            onClick={() => {
-              setSelectedCategory('all');
-              playSoundEffect('tap');
-            }}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 border ${
-              selectedCategory === 'all'
-                ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-amber-400/40'
-                : 'bg-white text-slate-700 hover:bg-amber-50 border-amber-200/90 shadow-2xs'
-            }`}
-          >
-            <span className="text-base">🌟</span>
-            <span>{language === 'ar' ? 'جميع المفردات' : language === 'fr' ? 'Tous les thèmes' : 'All Themes'}</span>
-            <span className="bg-amber-100 text-amber-900 text-[10px] px-1.5 py-0.2 rounded-full font-black">
-              {THEMATIC_VOCABULARY_ITEMS.length}
-            </span>
-          </button>
+      {/* When a specific category is selected: Show breadcrumb & category banner */}
+      {selectedCategory !== 'all' && currentCategoryMeta && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 rounded-3xl p-5 sm:p-6 border-2 border-amber-300/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                setSelectedCategory('all');
+                playSoundEffect('tap');
+              }}
+              className="p-3 bg-white hover:bg-amber-100 text-amber-950 font-bold rounded-2xl border-2 border-amber-300 shadow-xs hover:shadow-md transition-all flex items-center gap-2 text-xs sm:text-sm shrink-0 active:scale-95"
+              title="العودة لجميع مجالات المفردات"
+            >
+              <ChevronRight className="w-5 h-5 rtl:rotate-180" />
+              <span>{language === 'ar' ? 'العودة للمجالات' : language === 'fr' ? 'Tous les thèmes' : 'All Domains'}</span>
+            </button>
 
-          {THEMATIC_CATEGORIES.map((cat) => {
-            const isSelected = selectedCategory === cat.id;
-            const countInCat = THEMATIC_VOCABULARY_ITEMS.filter((w) => w.category === cat.id).length;
+            <div className="flex items-center gap-3">
+              <span className="text-4xl p-2 bg-white rounded-2xl shadow-xs border border-amber-200">
+                {currentCategoryMeta.icon}
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 dir="rtl" className="font-arabic font-black text-xl sm:text-2xl text-slate-900">
+                    {currentCategoryMeta.titleAr}
+                  </h2>
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 shadow-2xs">
+                    {filteredWords.length} {language === 'ar' ? 'كلمات' : 'mots'}
+                  </span>
+                </div>
+                <p className="text-xs font-bold text-slate-600 mt-0.5">
+                  {language === 'fr' ? currentCategoryMeta.titleFr : currentCategoryMeta.titleEn} — {language === 'fr' ? currentCategoryMeta.descriptionFr : currentCategoryMeta.descriptionAr}
+                </p>
+              </div>
+            </div>
+          </div>
 
-            return (
+          {/* Quick horizontal category switcher pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 max-w-md">
+            {THEMATIC_CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => {
@@ -443,29 +452,24 @@ export const VisualVocabularyHub: React.FC<VisualVocabularyHubProps> = ({
                   setFlashcardIndex(0);
                   playSoundEffect('tap');
                 }}
-                className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 border ${
-                  isSelected
-                    ? `bg-gradient-to-r ${cat.colorGradient} text-white border-transparent shadow-md ring-2 ring-amber-400/50 scale-102`
-                    : 'bg-white text-slate-700 hover:bg-amber-50 border-amber-200/90 shadow-2xs'
+                className={`p-2 rounded-xl text-lg transition-all shrink-0 border ${
+                  selectedCategory === cat.id
+                    ? 'bg-amber-500 border-amber-600 shadow-xs scale-110'
+                    : 'bg-white hover:bg-amber-50 border-amber-200'
                 }`}
+                title={cat.titleAr}
               >
-                <span className="text-base">{cat.icon}</span>
-                <span className="font-arabic font-extrabold">{cat.titleAr}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                  isSelected ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-700'
-                }`}>
-                  {countInCat}
-                </span>
+                {cat.icon}
               </button>
-            );
-          })}
-        </div>
-      </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* ========================================================================= */}
       {/* 3. SEARCH & BOOKMARK FILTER BAR                                           */}
       {/* ========================================================================= */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white/95 backdrop-blur-md p-3 rounded-2xl border border-amber-200/80 shadow-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl border border-amber-200/80 shadow-xs">
         {/* Search Input */}
         <div className="relative flex-1 min-w-[240px]">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -492,33 +496,171 @@ export const VisualVocabularyHub: React.FC<VisualVocabularyHubProps> = ({
           )}
         </div>
 
-        {/* Bookmarks Toggle Pill */}
-        <button
-          onClick={() => {
-            setFilterBookmarksOnly((prev) => !prev);
-            playSoundEffect('tap');
-          }}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
-            filterBookmarksOnly
-              ? 'bg-rose-500 text-white border-rose-600 shadow-sm'
-              : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'
-          }`}
-        >
-          <Bookmark className={`w-3.5 h-3.5 ${filterBookmarksOnly ? 'fill-white' : 'text-rose-500'}`} />
-          <span>{language === 'ar' ? 'الكلمات المحفوظة' : language === 'fr' ? 'Favoris' : 'Bookmarks'}</span>
-          <span className="font-mono text-[11px] font-black">({bookmarkedIds.length})</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Reset to All Domains Button if in single category */}
+          {selectedCategory !== 'all' && (
+            <button
+              onClick={() => {
+                setSelectedCategory('all');
+                playSoundEffect('tap');
+              }}
+              className="px-3 py-2 rounded-xl text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-300 transition-colors flex items-center gap-1.5"
+            >
+              <Grid className="w-3.5 h-3.5" />
+              <span>{language === 'ar' ? 'عرض كل المجالات' : 'Voir tous les thèmes'}</span>
+            </button>
+          )}
+
+          {/* Bookmarks Toggle Pill */}
+          <button
+            onClick={() => {
+              setFilterBookmarksOnly((prev) => !prev);
+              playSoundEffect('tap');
+            }}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
+              filterBookmarksOnly
+                ? 'bg-rose-500 text-white border-rose-600 shadow-sm'
+                : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'
+            }`}
+          >
+            <Bookmark className={`w-3.5 h-3.5 ${filterBookmarksOnly ? 'fill-white' : 'text-rose-500'}`} />
+            <span>{language === 'ar' ? 'الكلمات المحفوظة' : language === 'fr' ? 'Favoris' : 'Bookmarks'}</span>
+            <span className="font-mono text-[11px] font-black">({bookmarkedIds.length})</span>
+          </button>
+        </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* 4. DEFAULT OVERVIEW: DOMAIN CATEGORY CARDS GRID                           */}
+      {/* (When in 'all' view and not searching/filtering bookmarks)                */}
+      {/* ========================================================================= */}
+      {selectedCategory === 'all' && !searchQuery.trim() && !filterBookmarksOnly && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="w-7 h-7 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-sm shadow-xs">
+                📚
+              </span>
+              <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
+                {language === 'ar'
+                  ? 'اختر مجال المفردات لعرض الكلمات والتفاصيل :'
+                  : language === 'fr'
+                  ? 'Choisissez une catégorie thématique :'
+                  : 'Select a Vocabulary Domain :'}
+              </h3>
+            </div>
+            <span className="text-xs font-bold text-slate-500">
+              {THEMATIC_CATEGORIES.length} {language === 'ar' ? 'مجالات مصورة' : 'catégories'}
+            </span>
+          </div>
+
+          {/* Grid of Domain Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+            {THEMATIC_CATEGORIES.map((cat) => {
+              const categoryWords = THEMATIC_VOCABULARY_ITEMS.filter((w) => w.category === cat.id);
+              const previewWords = categoryWords.slice(0, 4);
+
+              return (
+                <motion.div
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                  key={cat.id}
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    playSoundEffect('tap');
+                  }}
+                  className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-amber-200/90 hover:border-amber-500 shadow-sm hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group relative overflow-hidden"
+                >
+                  {/* Category Accent Top Gradient Bar */}
+                  <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${cat.colorGradient}`} />
+
+                  {/* Header: Icon + Word Count Badge */}
+                  <div className="flex items-start justify-between gap-3 pt-2">
+                    <div className="w-16 h-16 rounded-2xl bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center text-4xl shadow-inner border border-amber-200/80 group-hover:scale-110 transition-transform">
+                      {cat.icon}
+                    </div>
+
+                    <span className="text-[11px] font-black px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors">
+                      {categoryWords.length} {language === 'ar' ? 'كلمات' : 'mots'}
+                    </span>
+                  </div>
+
+                  {/* Category Titles & Description */}
+                  <div className="my-4 space-y-1.5">
+                    <h3 dir="rtl" className="font-arabic font-black text-lg sm:text-xl text-slate-900 group-hover:text-amber-800 transition-colors">
+                      {cat.titleAr}
+                    </h3>
+                    <p className="text-xs font-extrabold text-amber-700">
+                      {language === 'fr' ? cat.titleFr : cat.titleEn}
+                    </p>
+                    <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">
+                      {language === 'fr' ? cat.descriptionFr : cat.descriptionAr}
+                    </p>
+                  </div>
+
+                  {/* Word Preview Chips */}
+                  <div className="bg-amber-50/60 rounded-2xl p-2.5 border border-amber-100 mb-4">
+                    <span className="text-[10px] font-bold text-slate-500 block mb-1.5" dir="rtl">
+                      {language === 'ar' ? 'أمثلة من الكلمات :' : 'Exemples :'}
+                    </span>
+                    <div className="flex flex-wrap gap-1.5" dir="rtl">
+                      {previewWords.map((pw) => (
+                        <span
+                          key={pw.id}
+                          className="font-arabic text-xs font-bold px-2 py-0.5 rounded-lg bg-white text-slate-800 border border-amber-200/70 shadow-2xs"
+                        >
+                          {pw.arabic}
+                        </span>
+                      ))}
+                      {categoryWords.length > 4 && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-lg bg-amber-200/70 text-amber-950">
+                          +{categoryWords.length - 4}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Call to Action Button */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-black text-amber-900 group-hover:text-amber-600">
+                    <span>{language === 'ar' ? 'تصفح مفردات هذا المجال' : language === 'fr' ? 'Ouvrir le vocabulaire' : 'Open Vocabulary'}</span>
+                    <span className="w-7 h-7 rounded-xl bg-amber-100 group-hover:bg-amber-500 group-hover:text-slate-950 flex items-center justify-center transition-colors">
+                      ➔
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 4. MAIN CONTENT AREA: BASED ON SELECTED VIEW MODE                         */}
       {/* ========================================================================= */}
 
       {/* ------------------------------------------------------------------------- */}
-      {/* MODE 1: VISUAL CARDS GRID (ILLUSTRATED GALLERY)                           */}
+      {/* MODE 1: VISUAL CARDS GRID (ILLUSTRATED WORDS FOR SELECTED CATEGORY / SEARCH) */}
       {/* ------------------------------------------------------------------------- */}
-      {viewMode === 'grid' && (
+      {viewMode === 'grid' && (selectedCategory !== 'all' || searchQuery.trim() || filterBookmarksOnly) && (
         <div className="space-y-4">
+          {/* Header indicator for active category word list */}
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">
+                {currentCategoryMeta ? currentCategoryMeta.icon : '🔍'}
+              </span>
+              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                {currentCategoryMeta
+                  ? `${language === 'ar' ? 'مفردات' : 'Vocabulaire'} : ${language === 'ar' ? currentCategoryMeta.titleAr : currentCategoryMeta.titleFr}`
+                  : searchQuery.trim()
+                  ? `${language === 'ar' ? 'نتائج البحث عن' : 'Résultats de recherche'} : "${searchQuery}"`
+                  : language === 'ar' ? 'الكلمات المفضلة' : 'Mots favoris'}
+              </h3>
+            </div>
+            <span className="text-xs font-mono font-bold text-slate-600 bg-amber-100 px-2.5 py-1 rounded-full border border-amber-300">
+              {filteredWords.length} {language === 'ar' ? 'كلمات معروضة' : 'mots'}
+            </span>
+          </div>
+
           {filteredWords.length === 0 ? (
             <div className="text-center py-16 bg-white/90 rounded-3xl border-2 border-dashed border-amber-200 p-8">
               <div className="text-4xl mb-2">🔍</div>

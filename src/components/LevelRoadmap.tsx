@@ -30,6 +30,7 @@ interface LevelRoadmapProps {
   onOpenSoundGame: () => void;
   onOpenUnit1Lab?: () => void;
   onOpenThematicVocab?: (categoryId?: ThematicCategoryId) => void;
+  onOpenTextStudio?: () => void;
 }
 
 export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
@@ -41,6 +42,7 @@ export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
   onOpenSoundGame,
   onOpenUnit1Lab,
   onOpenThematicVocab,
+  onOpenTextStudio,
 }) => {
   const unitsInLevel = CURRICULUM_UNITS.filter((u) => u.level === currentLevel);
 
@@ -305,6 +307,43 @@ export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
           ))}
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* CUSTOM TEXT READER & VOICE STUDIO BANNER (قارئ النصوص المخصص والمسجل الصوتي) */}
+      {/* ========================================================================= */}
+      {onOpenTextStudio && (
+        <div className="bg-gradient-to-r from-slate-900 via-amber-950/80 to-slate-900 rounded-3xl p-6 sm:p-7 border-2 border-amber-400/80 shadow-xl text-white flex flex-col md:flex-row items-center justify-between gap-5 relative overflow-hidden">
+          <div className="space-y-2 text-right w-full md:w-auto" dir="rtl">
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black">
+                ✨ ميزة جديدة ومطلوبة
+              </span>
+              <span className="text-amber-300 text-xs font-bold font-arabic">
+                تتبع الكلمات بدائرة مضيئة + تسجيل ومقارنة الصوت
+              </span>
+            </div>
+            <h3 className="font-arabic text-xl sm:text-2xl font-black text-amber-200">
+              قَارِئُ النُّصُوصِ المُخَصَّصَةِ وَاسْتُودِيُو التَّسْجِيلِ الصَّوْتِيِّ
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
+              {language === 'fr'
+                ? 'Collez n’importe quel texte arabe pour le lire avec un curseur animé mot par mot et enregistrer votre voix.'
+                : 'أدخل نصوصك الخاصة أو قصصك المفضلة، واستمع لقراءتها مع تظليل كل كلمة بدائرة أو خط ملون، وسجل صوتك للمقارنة الفورية.'}
+            </p>
+          </div>
+
+          <button
+            onClick={() => {
+              onOpenTextStudio();
+              playSoundEffect('tap');
+            }}
+            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2.5 transition-all active:scale-95 shrink-0 w-full md:w-auto"
+          >
+            <span className="text-base">🎙️</span>
+            <span>{language === 'ar' ? 'افتح قارئ النصوص والمسجل ➔' : language === 'fr' ? 'Ouvrir le Studio de Lecture ➔' : 'Open Custom Reader Studio ➔'}</span>
+          </button>
+        </div>
+      )}
 
       {/* Curriculum Units List for Selected Level */}
       <div className="space-y-4">

@@ -16,6 +16,7 @@ import { SpeedReadingGameModal } from './components/SpeedReadingGameModal';
 import { ContinuousSpeakingLab } from './components/ContinuousSpeakingLab';
 import { UnitCurriculumLab } from './components/UnitCurriculumLab';
 import { VisualVocabularyHub } from './components/VisualVocabularyHub';
+import { CustomTextReaderStudio } from './components/CustomTextReaderStudio';
 import { ThematicCategoryId } from './data/thematicVocabularyData';
 import { Footer } from './components/Footer';
 import { CulturalProverbs } from './components/CulturalProverbs';
@@ -42,7 +43,7 @@ export default function App() {
     const saved = localStorage.getItem('arabiya_lang');
     return (saved as SupportedLanguage) || 'fr';
   });
-  const [activeView, setActiveView] = useState<'roadmap' | 'vocabHub' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab' | 'unit1Lab'>('roadmap');
+  const [activeView, setActiveView] = useState<'roadmap' | 'vocabHub' | 'textStudio' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab' | 'unit1Lab'>('roadmap');
   const [selectedUnit, setSelectedUnit] = useState<LessonUnit | null>(null);
   const [selectedVocabCategory, setSelectedVocabCategory] = useState<ThematicCategoryId | 'all'>('all');
 
@@ -90,6 +91,12 @@ export default function App() {
   const handleOpenThematicVocab = (categoryId?: ThematicCategoryId | 'all') => {
     setSelectedVocabCategory(categoryId || 'all');
     setActiveView('vocabHub');
+    setSelectedUnit(null);
+    playSoundEffect('tap');
+  };
+
+  const handleOpenTextStudio = () => {
+    setActiveView('textStudio');
     setSelectedUnit(null);
     playSoundEffect('tap');
   };
@@ -152,6 +159,7 @@ export default function App() {
         onOpenReadingLab={() => handleOpenReadingLab()}
         onOpenSpeedReading={handleOpenSpeedReading}
         onOpenThematicVocab={handleOpenThematicVocab}
+        onOpenTextStudio={handleOpenTextStudio}
         onOpenSpeakingLab={() => {
           setActiveView('speakingLab');
           playSoundEffect('tap');
@@ -168,17 +176,17 @@ export default function App() {
         {/* Quick Utility Strip */}
         <div className="flex flex-wrap items-center justify-between gap-3 bg-white/95 backdrop-blur-md p-3 rounded-2xl border border-amber-200/80 shadow-sm shadow-amber-500/5">
           {/* View Mode Switcher */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
             <button
               onClick={() => {
                 setActiveView('roadmap');
                 setSelectedUnit(null);
                 playSoundEffect('tap');
               }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
                 activeView === 'roadmap'
                   ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-600/30'
-                  : 'text-slate-700 hover:bg-amber-50 hover:text-emerald-800'
+                  : 'text-slate-700 hover:bg-amber-50 hover:text-emerald-800 bg-slate-50'
               }`}
             >
               <Compass className="w-4 h-4" />
@@ -188,15 +196,29 @@ export default function App() {
             <button
               id="btn-strip-thematic-vocab"
               onClick={() => handleOpenThematicVocab()}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 ${
                 activeView === 'vocabHub'
                   ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/30 ring-2 ring-amber-400'
-                  : 'text-amber-950 bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300'
+                  : 'text-amber-950 bg-amber-100 hover:bg-amber-200 border border-amber-300'
               }`}
             >
               <span className="text-base">🖼️</span>
-              <span className="font-arabic">{language === 'ar' ? 'المفردات المصورة (المنزل، الأسرة، الفواكه...)' : language === 'fr' ? 'Vocabulaire Illustré (Thèmes)' : 'Visual Vocabulary'}</span>
-              <span className="bg-slate-950 text-amber-300 text-[10px] px-1.5 py-0.2 rounded-full font-black">12 مجالاً</span>
+              <span className="font-arabic">{language === 'ar' ? 'بطاقات المفردات (المجالات)' : language === 'fr' ? 'Vocabulaire par Thèmes' : 'Visual Vocabulary'}</span>
+              <span className="bg-slate-950 text-amber-300 text-[9px] px-1.5 py-0.2 rounded-full font-black">12 مجالاً</span>
+            </button>
+
+            <button
+              id="btn-strip-text-studio"
+              onClick={handleOpenTextStudio}
+              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 ${
+                activeView === 'textStudio'
+                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/30 ring-2 ring-amber-400'
+                  : 'text-slate-950 bg-amber-200 hover:bg-amber-300 border border-amber-400'
+              }`}
+            >
+              <span className="text-base">🎙️</span>
+              <span className="font-arabic">{language === 'ar' ? 'قارئ ومسجل النصوص' : language === 'fr' ? 'Studio Textes & Voix' : 'Text Studio'}</span>
+              <span className="bg-slate-950 text-amber-300 text-[9px] px-1.5 py-0.2 rounded-full font-black">جديد ✨</span>
             </button>
 
             <button
@@ -205,15 +227,14 @@ export default function App() {
                 setSelectedUnit(null);
                 playSoundEffect('tap');
               }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
                 activeView === 'unit1Lab'
                   ? 'bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 text-white shadow-sm shadow-amber-500/30'
-                  : 'text-amber-950 bg-amber-100/80 hover:bg-amber-200/90 border border-amber-300/80'
+                  : 'text-amber-950 bg-white hover:bg-amber-100 border border-amber-300'
               }`}
             >
               <span className="text-base">👨‍👩‍👧‍👦</span>
-              <span className="font-arabic font-extrabold">{language === 'ar' ? 'الوحدة 1 (الأسرة والمحيط - حوارات التعارف)' : language === 'fr' ? 'Unité 1 (Famille & Dialogues)' : 'Unit 1 (Family & Dialogues)'}</span>
-              <span className="bg-emerald-700 text-white text-[10px] px-1.5 py-0.2 rounded-full font-black">2025</span>
+              <span className="font-arabic font-extrabold">{language === 'ar' ? 'الوحدة 1 (الأسرة)' : language === 'fr' ? 'Unité 1 (Famille)' : 'Unit 1 (Family)'}</span>
             </button>
 
             <button
@@ -222,34 +243,31 @@ export default function App() {
                 setSelectedUnit(null);
                 playSoundEffect('tap');
               }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
                 activeView === 'speakingLab'
                   ? 'bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white shadow-sm shadow-rose-600/30'
-                  : 'text-slate-700 hover:bg-rose-50 hover:text-rose-900 border border-rose-200/60'
+                  : 'text-slate-700 hover:bg-rose-50 hover:text-rose-900 border border-rose-200 bg-white'
               }`}
             >
-              <span className="text-base">🎙️</span>
-              <span>{language === 'ar' ? 'التعبير الشفهي والاستماع (Parler en continu)' : language === 'fr' ? 'Oral & Écoute (Parler en continu)' : 'Speaking & Listening'}</span>
-              <span className="bg-rose-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-black animate-pulse">ELCO</span>
+              <span className="text-base">🗣️</span>
+              <span>{language === 'ar' ? 'التعبير الشفهي' : language === 'fr' ? 'Oral & Écoute' : 'Speaking'}</span>
             </button>
 
             <button
               onClick={() => handleOpenReadingLab()}
-              className="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-700 text-white shadow-sm shadow-emerald-700/25 hover:brightness-105 active:scale-95"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-700 text-white shadow-sm shadow-emerald-700/25 hover:brightness-105 active:scale-95 shrink-0"
             >
               <GraduationCap className="w-4 h-4 text-amber-300" />
-              <span>{language === 'ar' ? 'مختبر القراءة والتهجئة (الصف 1 متقدم)' : language === 'fr' ? 'Atelier Lecture (1re Avancé)' : 'Reading Lab (1st Grade)'}</span>
-              <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">جديد</span>
+              <span>{language === 'ar' ? 'مختبر القراءة (1 متقدم)' : language === 'fr' ? 'Atelier Lecture' : 'Reading'}</span>
             </button>
 
             <button
               id="btn-main-speed-reading"
               onClick={handleOpenSpeedReading}
-              className="px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-sm shadow-amber-500/25 hover:brightness-105 active:scale-95 border border-amber-400"
+              className="px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-sm shadow-amber-500/25 hover:brightness-105 active:scale-95 border border-amber-400 shrink-0"
             >
               <span className="text-base">⚡</span>
-              <span>{language === 'ar' ? 'لعبة: من يقرأ أسرع؟ (مؤقت بالثواني)' : language === 'fr' ? 'Jeu : Qui lit le plus vite ? ⏱️' : 'Speed Reading Challenge ⏱️'}</span>
-              <span className="bg-slate-950 text-amber-300 text-[10px] px-1.5 py-0.2 rounded-full font-black font-mono">WPM</span>
+              <span>{language === 'ar' ? 'تحدي السرعة ⏱️' : language === 'fr' ? 'Jeu Vitesse ⏱️' : 'Speed Challenge ⏱️'}</span>
             </button>
 
             <button
@@ -257,14 +275,14 @@ export default function App() {
                 setActiveView('tutor');
                 playSoundEffect('tap');
               }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
                 activeView === 'tutor'
                   ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm shadow-amber-500/30'
-                  : 'text-slate-700 hover:bg-amber-50 hover:text-amber-900'
+                  : 'text-slate-700 hover:bg-amber-50 hover:text-amber-900 bg-white border border-slate-200'
               }`}
             >
               <MessageSquare className="w-4 h-4" />
-              <span>{language === 'ar' ? 'المعلم الذكي (فصيح)' : language === 'fr' ? 'Tuteur IA' : 'AI Tutor'}</span>
+              <span>{language === 'ar' ? 'المعلم الذكي' : language === 'fr' ? 'Tuteur IA' : 'AI Tutor'}</span>
             </button>
 
             <button
@@ -332,11 +350,26 @@ export default function App() {
                 playSoundEffect('tap');
               }}
               onOpenThematicVocab={handleOpenThematicVocab}
+              onOpenTextStudio={handleOpenTextStudio}
             />
 
             {/* Cultural wisdom and dialect comparisons widget */}
             <CulturalProverbs language={language} />
           </div>
+        )}
+
+        {activeView === 'textStudio' && (
+          <CustomTextReaderStudio
+            language={language}
+            onBack={() => {
+              setActiveView('roadmap');
+              playSoundEffect('tap');
+            }}
+            onEarnXp={(amt) => {
+              setXp((x) => x + amt);
+              setGems((g) => g + Math.ceil(amt / 10));
+            }}
+          />
         )}
 
         {activeView === 'vocabHub' && (

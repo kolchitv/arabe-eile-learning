@@ -18,6 +18,7 @@ interface FooterProps {
   onOpenPlacement?: () => void;
   onOpenReadingLab?: () => void;
   onOpenSpeakingLab?: () => void;
+  onOpenSpeedReading?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -27,6 +28,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenPlacement,
   onOpenReadingLab,
   onOpenSpeakingLab,
+  onOpenSpeedReading,
 }) => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -134,6 +136,17 @@ export const Footer: React.FC<FooterProps> = ({
                   <span>{language === 'ar' ? 'مختبر القراءة والتهجئة (1 متقدم)' : 'Atelier Lecture (1re Avancé)'}</span>
                 </button>
               </li>
+              {onOpenSpeedReading && (
+                <li>
+                  <button 
+                    onClick={onOpenSpeedReading}
+                    className="text-amber-700 hover:text-amber-950 font-bold transition-colors flex items-center gap-1.5"
+                  >
+                    <span>⚡</span>
+                    <span>{language === 'ar' ? 'لعبة: من يقرأ أسرع؟ (المؤقت الذكي)' : 'Jeu : Qui lit le plus vite ?'}</span>
+                  </button>
+                </li>
+              )}
               <li>
                 <button 
                   onClick={onOpenPhonetics}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { CEFRLevel, LessonUnit, SupportedLanguage } from '../types';
 import { CURRICULUM_UNITS } from '../data/curriculumData';
+import { THEMATIC_CATEGORIES, ThematicCategoryId } from '../data/thematicVocabularyData';
 import { speakArabic, playSoundEffect } from '../utils/audio';
 import {
   Sparkles,
@@ -16,6 +17,8 @@ import {
   Crown,
   Volume2,
   Zap,
+  Grid,
+  Layers,
 } from 'lucide-react';
 
 interface LevelRoadmapProps {
@@ -26,6 +29,7 @@ interface LevelRoadmapProps {
   onOpenTutor: () => void;
   onOpenSoundGame: () => void;
   onOpenUnit1Lab?: () => void;
+  onOpenThematicVocab?: (categoryId?: ThematicCategoryId) => void;
 }
 
 export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
@@ -36,6 +40,7 @@ export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
   onOpenTutor,
   onOpenSoundGame,
   onOpenUnit1Lab,
+  onOpenThematicVocab,
 }) => {
   const unitsInLevel = CURRICULUM_UNITS.filter((u) => u.level === currentLevel);
 
@@ -235,6 +240,71 @@ export const LevelRoadmap: React.FC<LevelRoadmapProps> = ({
           </div>
         </div>
       )}
+
+      {/* ========================================================================= */}
+      {/* THEMATIC VISUAL VOCABULARY SHOWCASE (المفردات المصورة بالصور والنطق)         */}
+      {/* ========================================================================= */}
+      <div className="bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-emerald-500/10 rounded-3xl p-6 sm:p-7 border-2 border-amber-300/80 shadow-md space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-base shadow-xs">
+                🖼️
+              </span>
+              <h2 dir="rtl" className="font-arabic text-xl sm:text-2xl font-black text-slate-900">
+                بَنْكُ المُفْرَدَاتِ وَالمَفَاهِيمِ المُصَوَّرَةِ
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-600">
+              {language === 'fr'
+                ? 'Apprentissage visuel par thèmes : Maison, Famille, Salutations, Fruits, Métiers, Transports, etc.'
+                : 'موسوعة المفردات الأساسية بالصور التعبيرية، النطق الفصيح، وأمثلة الاستعمال.'}
+            </p>
+          </div>
+
+          {onOpenThematicVocab && (
+            <button
+              onClick={() => {
+                onOpenThematicVocab();
+                playSoundEffect('tap');
+              }}
+              className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm shadow-md shadow-amber-500/25 flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0"
+            >
+              <Grid className="w-4 h-4" />
+              <span>{language === 'ar' ? 'تصفح كل المفردات (12 مجالاً) ➔' : language === 'fr' ? 'Ouvrir le Dictionnaire Visuel ➔' : 'Explore Visual Dictionary ➔'}</span>
+            </button>
+          )}
+        </div>
+
+        {/* Thematic Category Visual Pills Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 pt-2">
+          {THEMATIC_CATEGORIES.slice(0, 6).map((cat) => (
+            <div
+              key={cat.id}
+              onClick={() => {
+                if (onOpenThematicVocab) onOpenThematicVocab(cat.id);
+                playSoundEffect('tap');
+              }}
+              className="bg-white rounded-2xl p-3.5 border-2 border-amber-200/90 hover:border-amber-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center justify-between space-y-2 hover:-translate-y-1"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-3xl group-hover:scale-115 transition-transform">
+                {cat.icon}
+              </div>
+              <div>
+                <h4 dir="rtl" className="font-arabic font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-amber-700 transition-colors line-clamp-1">
+                  {cat.titleAr}
+                </h4>
+                <p className="text-[10px] text-slate-500 font-bold truncate">
+                  {language === 'fr' ? cat.titleFr : cat.titleEn}
+                </p>
+              </div>
+              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors">
+                {language === 'ar' ? 'عرض الكلمات' : 'Voir les mots'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Curriculum Units List for Selected Level */}
       <div className="space-y-4">

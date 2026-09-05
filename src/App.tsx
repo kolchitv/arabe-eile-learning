@@ -12,8 +12,11 @@ import { CertificateModal } from './components/CertificateModal';
 import { PhoneticsGuideModal } from './components/PhoneticsGuideModal';
 import { VideoLibraryModal } from './components/VideoLibraryModal';
 import { ReadingLabModal } from './components/ReadingLabModal';
+import { SpeedReadingGameModal } from './components/SpeedReadingGameModal';
 import { ContinuousSpeakingLab } from './components/ContinuousSpeakingLab';
 import { UnitCurriculumLab } from './components/UnitCurriculumLab';
+import { VisualVocabularyHub } from './components/VisualVocabularyHub';
+import { ThematicCategoryId } from './data/thematicVocabularyData';
 import { Footer } from './components/Footer';
 import { CulturalProverbs } from './components/CulturalProverbs';
 import { playSoundEffect } from './utils/audio';
@@ -30,6 +33,7 @@ import {
   Flame,
   Crown,
   Video,
+  Timer,
 } from 'lucide-react';
 
 export default function App() {
@@ -38,8 +42,9 @@ export default function App() {
     const saved = localStorage.getItem('arabiya_lang');
     return (saved as SupportedLanguage) || 'fr';
   });
-  const [activeView, setActiveView] = useState<'roadmap' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab' | 'unit1Lab'>('roadmap');
+  const [activeView, setActiveView] = useState<'roadmap' | 'vocabHub' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab' | 'unit1Lab'>('roadmap');
   const [selectedUnit, setSelectedUnit] = useState<LessonUnit | null>(null);
+  const [selectedVocabCategory, setSelectedVocabCategory] = useState<ThematicCategoryId | 'all'>('all');
 
   // Gamification State (with local storage persistence)
   const [xp, setXp] = useState<number>(() => {
@@ -69,10 +74,23 @@ export default function App() {
   const [videoModalInitialId, setVideoModalInitialId] = useState<string | undefined>(undefined);
   const [isReadingModalOpen, setIsReadingModalOpen] = useState(false);
   const [readingModalCategoryId, setReadingModalCategoryId] = useState<string | undefined>(undefined);
+  const [isSpeedReadingModalOpen, setIsSpeedReadingModalOpen] = useState(false);
 
   const handleOpenReadingLab = (categoryId?: string) => {
     setReadingModalCategoryId(categoryId);
     setIsReadingModalOpen(true);
+    playSoundEffect('tap');
+  };
+
+  const handleOpenSpeedReading = () => {
+    setIsSpeedReadingModalOpen(true);
+    playSoundEffect('tap');
+  };
+
+  const handleOpenThematicVocab = (categoryId?: ThematicCategoryId | 'all') => {
+    setSelectedVocabCategory(categoryId || 'all');
+    setActiveView('vocabHub');
+    setSelectedUnit(null);
     playSoundEffect('tap');
   };
 
@@ -132,6 +150,8 @@ export default function App() {
         onOpenPhonetics={() => setIsPhoneticsModalOpen(true)}
         onOpenVideoLibrary={() => handleOpenVideoLibrary('all')}
         onOpenReadingLab={() => handleOpenReadingLab()}
+        onOpenSpeedReading={handleOpenSpeedReading}
+        onOpenThematicVocab={handleOpenThematicVocab}
         onOpenSpeakingLab={() => {
           setActiveView('speakingLab');
           playSoundEffect('tap');
@@ -163,6 +183,20 @@ export default function App() {
             >
               <Compass className="w-4 h-4" />
               <span>{language === 'ar' ? 'خريطة المستويات' : language === 'fr' ? 'Parcours A1-C2' : 'Curriculum Roadmap'}</span>
+            </button>
+
+            <button
+              id="btn-strip-thematic-vocab"
+              onClick={() => handleOpenThematicVocab()}
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${
+                activeView === 'vocabHub'
+                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/30 ring-2 ring-amber-400'
+                  : 'text-amber-950 bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300'
+              }`}
+            >
+              <span className="text-base">🖼️</span>
+              <span className="font-arabic">{language === 'ar' ? 'المفردات المصورة (المنزل، الأسرة، الفواكه...)' : language === 'fr' ? 'Vocabulaire Illustré (Thèmes)' : 'Visual Vocabulary'}</span>
+              <span className="bg-slate-950 text-amber-300 text-[10px] px-1.5 py-0.2 rounded-full font-black">12 مجالاً</span>
             </button>
 
             <button
@@ -206,6 +240,16 @@ export default function App() {
               <GraduationCap className="w-4 h-4 text-amber-300" />
               <span>{language === 'ar' ? 'مختبر القراءة والتهجئة (الصف 1 متقدم)' : language === 'fr' ? 'Atelier Lecture (1re Avancé)' : 'Reading Lab (1st Grade)'}</span>
               <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">جديد</span>
+            </button>
+
+            <button
+              id="btn-main-speed-reading"
+              onClick={handleOpenSpeedReading}
+              className="px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-sm shadow-amber-500/25 hover:brightness-105 active:scale-95 border border-amber-400"
+            >
+              <span className="text-base">⚡</span>
+              <span>{language === 'ar' ? 'لعبة: من يقرأ أسرع؟ (مؤقت بالثواني)' : language === 'fr' ? 'Jeu : Qui lit le plus vite ? ⏱️' : 'Speed Reading Challenge ⏱️'}</span>
+              <span className="bg-slate-950 text-amber-300 text-[10px] px-1.5 py-0.2 rounded-full font-black font-mono">WPM</span>
             </button>
 
             <button
@@ -287,11 +331,27 @@ export default function App() {
                 setActiveView('unit1Lab');
                 playSoundEffect('tap');
               }}
+              onOpenThematicVocab={handleOpenThematicVocab}
             />
 
             {/* Cultural wisdom and dialect comparisons widget */}
             <CulturalProverbs language={language} />
           </div>
+        )}
+
+        {activeView === 'vocabHub' && (
+          <VisualVocabularyHub
+            language={language}
+            initialCategoryId={selectedVocabCategory}
+            onBack={() => {
+              setActiveView('roadmap');
+              playSoundEffect('tap');
+            }}
+            onEarnXp={(amt) => {
+              setXp((x) => x + amt);
+              setGems((g) => g + Math.ceil(amt / 10));
+            }}
+          />
         )}
 
         {activeView === 'unit1Lab' && (
@@ -412,6 +472,16 @@ export default function App() {
         initialCategoryId={readingModalCategoryId}
       />
 
+      <SpeedReadingGameModal
+        isOpen={isSpeedReadingModalOpen}
+        onClose={() => setIsSpeedReadingModalOpen(false)}
+        language={language}
+        onAwardXp={(gain) => {
+          setXp((prev) => prev + gain);
+          setGems((g) => g + 5);
+        }}
+      />
+
       {/* Footer ArabFacile.com */}
       <Footer
         language={language}
@@ -419,6 +489,7 @@ export default function App() {
         onOpenVideoLibrary={() => handleOpenVideoLibrary('all')}
         onOpenPlacement={() => setIsPlacementModalOpen(true)}
         onOpenReadingLab={() => handleOpenReadingLab()}
+        onOpenSpeedReading={handleOpenSpeedReading}
         onOpenSpeakingLab={() => {
           setActiveView('speakingLab');
           window.scrollTo({ top: 0, behavior: 'smooth' });

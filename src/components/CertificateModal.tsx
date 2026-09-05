@@ -18,6 +18,8 @@ export const CertificateModal: React.FC<CertificateProps> = ({
   language,
 }) => {
   // Customizable Form State
+  const [titleFr, setTitleFr] = useState('ATTESTATION EN EILE ARABE');
+  const [titleAr, setTitleAr] = useState('شَهَادَةٌ تَقْدِيرِيَّةٌ فِي اللُّغَةِ العَرَبِيَّةِ');
   const [selectedLevel, setSelectedLevel] = useState<CEFRLevel>(initialLevel || 'A1');
   const [studentName, setStudentName] = useState('Said Kolchi');
   const [studentNameAr, setStudentNameAr] = useState('سعيد كلشي');
@@ -63,8 +65,8 @@ export const CertificateModal: React.FC<CertificateProps> = ({
             </div>
             <div>
               <h3 className="font-extrabold text-white text-base sm:text-lg flex items-center gap-2">
-                <span>Diplôme Officiel EILE</span>
-                <span className="text-amber-400 font-arabic text-sm">دبلوم مستوى اللغة العربية (بالمعايير المعتمدة)</span>
+                <span>Attestation EILE Arabe</span>
+                <span className="text-amber-400 font-arabic text-sm">شهادة تقديرية في اللغة العربية</span>
               </h3>
               <p className="text-xs text-slate-400">
                 {language === 'fr'
@@ -107,6 +109,26 @@ export const CertificateModal: React.FC<CertificateProps> = ({
         {/* Customization Drawer (Hidden on Print) */}
         {showSettings && (
           <div className="my-4 p-4 bg-slate-800/90 rounded-2xl border border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs print:hidden animate-fade-in shrink-0">
+            <div>
+              <label className="block text-slate-300 font-bold mb-1">Titre (FR)</label>
+              <input
+                type="text"
+                value={titleFr}
+                onChange={(e) => setTitleFr(e.target.value)}
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-white font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-slate-300 font-bold mb-1 font-arabic">العنوان الرئيسي (عربي)</label>
+              <input
+                type="text"
+                value={titleAr}
+                onChange={(e) => setTitleAr(e.target.value)}
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-white font-arabic font-bold text-right focus:ring-2 focus:ring-amber-500 focus:outline-none"
+              />
+            </div>
+
             <div>
               <label className="block text-slate-300 font-bold mb-1">Nom et prénom (FR)</label>
               <input
@@ -377,27 +399,33 @@ export const CertificateModal: React.FC<CertificateProps> = ({
               
               {/* French Title */}
               {diplomaMode !== 'ar' && (
-                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-black text-[#1b365d] tracking-widest uppercase mb-0.5">
-                  DIPLÔME
-                </h1>
+                <div className="mb-1">
+                  <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-black text-[#1b365d] tracking-widest uppercase mb-0.5">
+                    {titleFr.includes('ATTESTATION') && titleFr.includes('EILE') ? (
+                      <>
+                        <span className="block text-3xl sm:text-4xl md:text-5xl tracking-widest">ATTESTATION</span>
+                        <span className="block text-xs sm:text-sm font-bold tracking-widest text-[#c59b27] uppercase mt-0.5">
+                          EN EILE ARABE
+                        </span>
+                      </>
+                    ) : (
+                      titleFr
+                    )}
+                  </h1>
+                </div>
               )}
 
               {/* Arabic Title */}
               {diplomaMode !== 'fr' && (
-                <h2 className="font-arabic text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#1b365d] my-0.5">
-                  دِبْلُومُ مُسْتَوًى فِي اللُّغَةِ العَرَبِيَّةِ
-                </h2>
-              )}
-
-              {/* Subtitle French */}
-              {diplomaMode === 'bilingual' && (
-                <p className="font-serif text-xs sm:text-sm font-bold tracking-wider text-[#c59b27] uppercase mb-2">
-                  DE NIVEAU EN LANGUE ARABE
-                </p>
+                <div className="my-0.5">
+                  <h2 className="font-arabic text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#1b365d] leading-snug">
+                    {titleAr}
+                  </h2>
+                </div>
               )}
 
               {/* CEFR Level with Golden Laurels (🌿 A1 🌿) */}
-              <div className="flex items-center justify-center gap-3 sm:gap-4 my-1">
+              <div className="flex items-center justify-center gap-3 sm:gap-4 my-1.5">
                 {/* Left Laurel Branch */}
                 <span className="text-[#c59b27] text-2xl sm:text-3xl select-none">🪻</span>
 

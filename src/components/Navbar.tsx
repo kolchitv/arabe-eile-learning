@@ -18,6 +18,8 @@ interface NavbarProps {
   onOpenReadingLab: () => void;
   onOpenSpeakingLab?: () => void;
   onOpenUnit1Lab?: () => void;
+  onOpenSpeedReading?: () => void;
+  onOpenThematicVocab?: (categoryId?: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -36,6 +38,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenReadingLab,
   onOpenSpeakingLab,
   onOpenUnit1Lab,
+  onOpenSpeedReading,
+  onOpenThematicVocab,
 }) => {
   const levels: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -146,6 +150,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           {/* Quick Tools & Learning Modules */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar py-0.5">
+            {onOpenThematicVocab && (
+              <button
+                id="btn-nav-thematic-vocab"
+                onClick={() => onOpenThematicVocab()}
+                className="px-3 py-1.5 text-amber-950 hover:bg-amber-300/90 rounded-xl transition-all text-xs font-black flex items-center gap-1.5 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 border border-amber-500 shadow-xs active:scale-95 shrink-0"
+                title="بنك المفردات المصورة - المنازل، الأسرة، التعارف، الفواكه، المهن والمزيد"
+              >
+                <span className="text-base">🖼️</span>
+                <span className="font-arabic">{language === 'fr' ? 'Vocabulaire Illustré' : language === 'ar' ? 'المفردات المصورة' : 'Visual Vocabulary'}</span>
+                <span className="bg-slate-950 text-amber-300 text-[9px] px-1.5 py-0.2 rounded-full font-black">12 مجالاً</span>
+              </button>
+            )}
+
             {onOpenUnit1Lab && (
               <button
                 id="btn-unit1-lab"
@@ -180,6 +197,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               <GraduationCap className="w-4 h-4 text-emerald-700" />
               <span className="font-bold">{language === 'fr' ? '1re Avancé' : language === 'ar' ? 'القراءة (1 متقدم)' : 'Reading Lab'}</span>
             </button>
+
+            {onOpenSpeedReading && (
+              <button
+                id="btn-speed-reading"
+                onClick={onOpenSpeedReading}
+                className="px-3 py-1.5 text-amber-950 hover:text-black hover:bg-amber-300/90 rounded-xl transition-all text-xs font-extrabold flex items-center gap-1.5 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 border border-amber-500 shadow-xs active:scale-95 shrink-0"
+                title="تحدي من يقرأ أسرع؟ (مؤقت بالدقائق والثواني)"
+              >
+                <span className="text-base">⚡</span>
+                <span className="font-arabic">{language === 'fr' ? 'Qui lit vite ? ⏱️' : language === 'ar' ? 'من يقرأ أسرع؟ ⏱️' : 'Speed Reading ⏱️'}</span>
+              </button>
+            )}
 
             <button
               id="btn-video-library"

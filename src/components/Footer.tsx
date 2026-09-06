@@ -7,7 +7,8 @@ import {
   ExternalLink, 
   Sparkles,
   MessageCircle,
-  Share2
+  Share2,
+  GraduationCap
 } from 'lucide-react';
 import { SupportedLanguage } from '../types';
 
@@ -58,11 +59,11 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="cursor-pointer inline-block" onClick={scrollToTop}>
               <div className="text-2xl sm:text-3xl font-black tracking-tight font-sans">
                 <span className="text-sky-700">Arab</span>
-                <span className="text-amber-500">Facile</span>
-                <span className="text-slate-400 font-normal text-lg">.com</span>
+                <span className="text-amber-500">facile</span>
+                <span className="text-slate-500 font-bold text-lg">.com</span>
               </div>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                {language === 'ar' ? 'العربية في متناول يدك' : language === 'fr' ? "L'arabe à votre portée" : 'Arabic within your reach'}
+                {language === 'ar' ? 'العربية في متناول يدك • A1 - C2' : language === 'fr' ? "L'arabe à votre portée (A1 - C2)" : 'Arabic within your reach'}
               </p>
             </div>
 
@@ -285,16 +286,26 @@ export const Footer: React.FC<FooterProps> = ({
 
         </div>
 
-        {/* Bottom copyright row */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-700">© 2026 ArabFacile.com</span>
+        {/* Bottom copyright & Signature row */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <span className="font-extrabold text-slate-800">© 2026 Arabfacile.com</span>
             <span>•</span>
             <span>{language === 'ar' ? 'جميع الحقوق محفوظة' : 'Tous droits réservés'}</span>
+            <span>•</span>
+            <span className="text-slate-400">CECRL & EILE / ELCO</span>
           </div>
 
-          <div className="text-slate-400 text-center sm:text-right">
-            <span>Conforme aux normes européennes CECRL & EILE / ELCO</span>
+          {/* Signature: Prof SAID */}
+          <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 via-emerald-50 to-sky-50 border border-amber-300/80 px-3.5 py-1.5 rounded-full shadow-2xs">
+            <GraduationCap className="w-4 h-4 text-amber-600 shrink-0" />
+            <span className="text-slate-600 font-medium font-arabic">
+              {language === 'ar' ? 'توقيع:' : language === 'fr' ? 'Signature :' : 'Signature:'}
+            </span>
+            <span className="font-black text-slate-900 tracking-wide text-xs sm:text-sm bg-gradient-to-r from-sky-800 via-emerald-800 to-amber-700 bg-clip-text text-transparent">
+              Prof SAID
+            </span>
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           </div>
         </div>
       </div>

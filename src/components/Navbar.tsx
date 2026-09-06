@@ -173,12 +173,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">
-                  فَصِيح <span className="text-emerald-700 text-base sm:text-lg font-semibold">Faseeh</span>
+                <span className="font-extrabold text-lg sm:text-xl tracking-tight font-sans">
+                  <span className="text-sky-800">Arab</span>
+                  <span className="text-amber-500">facile</span>
+                  <span className="text-emerald-700 font-bold text-base sm:text-lg">.com</span>
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-slate-600 font-medium hidden md:block">
-                {language === 'ar' ? 'تعليم العربية لغير الناطقين بها' : language === 'fr' ? 'Arabe Langue Vivante (A1 ➔ C2)' : 'Arabic for Global Learners'}
+                {language === 'ar' ? 'العربية في متناول يدك • A1 ➔ C2' : language === 'fr' ? "L'arabe à votre portée (A1 ➔ C2)" : 'Arabic within your reach (A1 ➔ C2)'}
               </p>
             </div>
           </div>

@@ -22,6 +22,7 @@ import { ThematicCategoryId } from './data/thematicVocabularyData';
 import { Footer } from './components/Footer';
 import { CulturalProverbs } from './components/CulturalProverbs';
 import { playSoundEffect } from './utils/audio';
+import { Analytics } from '@vercel/analytics/react';
 import {
   Compass,
   MessageSquare,
@@ -562,6 +563,7 @@ export default function App() {
           playSoundEffect('tap');
         }}
       />
+      <Analytics />
     </div>
   );
 }

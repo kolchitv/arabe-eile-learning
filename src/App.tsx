@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CEFRLevel, LessonUnit, SupportedLanguage } from './types';
 import { CURRICULUM_UNITS } from './data/curriculumData';
+import { LearningDashboard } from './components/LearningDashboard';
 import { Navbar } from './components/Navbar';
 import { LevelRoadmap } from './components/LevelRoadmap';
 import { LessonView } from './components/LessonView';
@@ -44,7 +45,7 @@ export default function App() {
     const saved = localStorage.getItem('arabiya_lang');
     return (saved as SupportedLanguage) || 'fr';
   });
-  const [activeView, setActiveView] = useState<'roadmap' | 'vocabHub' | 'textStudio' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab' | 'unit1Lab'>('roadmap');
+  const [activeView, setActiveView] = useState<'home' | 'roadmap' | 'vocabHub' | 'textStudio' | 'lesson' | 'tutor' | 'soundLab' | 'speakingLab' | 'unit1Lab'>('home');
   const [selectedUnit, setSelectedUnit] = useState<LessonUnit | null>(null);
   const [selectedVocabCategory, setSelectedVocabCategory] = useState<ThematicCategoryId | 'all'>('all');
 
@@ -165,9 +166,27 @@ export default function App() {
     setSelectedUnit(null);
   };
 
+  const [writingEntry, setWritingEntry] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#FFFBEB] text-slate-900 font-sans flex flex-col selection:bg-amber-400 selection:text-amber-950">
       {/* Navigation Bar */}
+      {activeView === 'home' ? <LearningDashboard
+        language={language} onLanguage={setLanguage}
+        completed={CURRICULUM_UNITS.filter(u => u.level === currentLevel && completedUnits.includes(u.id)).length}
+        total={CURRICULUM_UNITS.filter(u => u.level === currentLevel).length}
+        onOpen={action => {
+          if (action === 'letters') handleOpenTextStudio(undefined, 'letters');
+          else if (action === 'reading') handleOpenReadingLab();
+          else if (action === 'assessment') setIsPlacementModalOpen(true);
+          else if (action === 'videos') handleOpenVideoLibrary('all');
+          else if (action === 'writing') { setWritingEntry(true); setActiveView('unit1Lab'); }
+          else if (action === 'games') setActiveView('soundLab');
+          else if (action === 'speaking') setActiveView('speakingLab');
+          else setActiveView('roadmap');
+        }}
+      /> : <>
+      <button className="mx-auto mt-4 rounded-xl border border-teal-200 bg-white px-6 py-3 font-bold text-teal-800" onClick={() => { setActiveView('home'); setWritingEntry(false); }}>{language === 'ar' ? '⌂ الرئيسية' : '⌂ Accueil'}</button>
       <Navbar
         currentLevel={currentLevel}
         onSelectLevel={(lvl) => {
@@ -200,9 +219,10 @@ export default function App() {
         }}
         onSelectUnitNumber={handleSelectUnitNumber}
       />
+      </>}
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main hidden={activeView === 'home'} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Quick Utility Strip */}
         <div className="flex flex-wrap items-center justify-between gap-3 bg-white/95 backdrop-blur-md p-3 rounded-2xl border border-amber-200/80 shadow-sm shadow-amber-500/5">
           {/* View Mode Switcher */}
@@ -422,8 +442,10 @@ export default function App() {
 
         {activeView === 'unit1Lab' && (
           <UnitCurriculumLab
+            key={writingEntry ? 'writing' : 'default'}
+            initialTab={writingEntry ? 'writing' : 'dialogue'}
             language={language}
-            onBack={() => {
+            onBackToRoadmap={() => {
               setActiveView('roadmap');
               playSoundEffect('tap');
             }}

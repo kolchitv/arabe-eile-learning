@@ -33,19 +33,21 @@ import confetti from 'canvas-confetti';
 
 interface UnitCurriculumLabProps {
   language: SupportedLanguage;
+  initialTab?: 'dialogue' | 'writing';
   onEarnXp?: (amount: number) => void;
   onBackToRoadmap?: () => void;
 }
 
 export const UnitCurriculumLab: React.FC<UnitCurriculumLabProps> = ({
   language,
+  initialTab = 'dialogue',
   onEarnXp,
   onBackToRoadmap,
 }) => {
   const [selectedSessionIndex, setSelectedSessionIndex] = useState<number>(0);
   const [activeComponentTab, setActiveComponentTab] = useState<
     'dialogue' | 'oral_comp' | 'speaking' | 'reading' | 'writing' | 'eval'
-  >('dialogue');
+  >(initialTab);
 
   // Audio playing states
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
